@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { CalendarEvent } from '../lib/types';
 import { formatTime } from '../lib/utils';
+import { addLocalEvent, deleteLocalEvent, getLocalEvents } from '../services/localEvents';
 
 type Props = { events: CalendarEvent[] };
 
@@ -15,61 +16,86 @@ function toDateStr(d: Date) {
 
 function ChevronLeft() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="15 18 9 12 15 6" />
     </svg>
   );
 }
-
 function ChevronRight() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <polyline points="9 18 15 12 9 6" />
+    </svg>
+  );
+}
+function PlusIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}
+function XIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" aria-hidden="true">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   );
 }
 
 export function CalendarCard({ events }: Props) {
   const todayStr = useMemo(() => toDateStr(new Date()), []);
+  const now = new Date();
 
-  const [viewMonth, setViewMonth] = useState(() => {
-    const n = new Date();
-    return new Date(n.getFullYear(), n.getMonth(), 1);
-  });
-
+  const [viewMonth, setViewMonth] = useState(
+    () => new Date(now.getFullYear(), now.getMonth(), 1),
+  );
   const [selectedDate, setSelectedDate] = useState(todayStr);
+  const [localEvents, setLocalEvents] = useState<CalendarEvent[]>(getLocalEvents);
+
+  /* form state */
+  const [showForm, setShowForm] = useState(false);
+  const [formTitle, setFormTitle] = useState('');
+  const [formStart, setFormStart] = useState('09:00');
+  const [formEnd, setFormEnd] = useState('10:00');
+  const [formLocation, setFormLocation] = useState('');
 
   const monthLabel = viewMonth.toLocaleDateString('de-CH', { month: 'long', year: 'numeric' });
 
-  /* Build grid cells for the month (7 cols, Mon-first) */
   const days = useMemo(() => {
     const year = viewMonth.getFullYear();
     const month = viewMonth.getMonth();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-
-    let startDow = firstDay.getDay(); // 0 = Sun
-    startDow = startDow === 0 ? 6 : startDow - 1; // Mon = 0
-
+    let startDow = firstDay.getDay();
+    startDow = startDow === 0 ? 6 : startDow - 1;
     const cells: (Date | null)[] = [];
     for (let i = 0; i < startDow; i++) cells.push(null);
     for (let d = 1; d <= lastDay.getDate(); d++) cells.push(new Date(year, month, d));
     while (cells.length % 7 !== 0) cells.push(null);
-
     return cells;
   }, [viewMonth]);
 
-  /* Group events by ISO date string */
+  const allEvents = useMemo(() => [...events, ...localEvents], [events, localEvents]);
+
   const eventsByDate = useMemo(() => {
     const map: Record<string, CalendarEvent[]> = {};
-    for (const ev of events) {
+    for (const ev of allEvents) {
       const key = ev.startsAt.slice(0, 10);
       (map[key] ??= []).push(ev);
     }
     return map;
-  }, [events]);
+  }, [allEvents]);
 
-  const selectedEvents = eventsByDate[selectedDate] ?? [];
+  const selectedEvents = useMemo(
+    () =>
+      (eventsByDate[selectedDate] ?? [])
+        .slice()
+        .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
+    [eventsByDate, selectedDate],
+  );
 
   const selectedLabel = new Date(`${selectedDate}T00:00:00`).toLocaleDateString('de-CH', {
     weekday: 'long',
@@ -77,137 +103,215 @@ export function CalendarCard({ events }: Props) {
     month: 'long',
   });
 
+  const isCurrentMonth =
+    viewMonth.getMonth() === now.getMonth() && viewMonth.getFullYear() === now.getFullYear();
+
+  function openForm() {
+    setShowForm(true);
+    setFormTitle('');
+    setFormStart('09:00');
+    setFormEnd('10:00');
+    setFormLocation('');
+  }
+
+  function closeForm() {
+    setShowForm(false);
+  }
+
+  function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    const title = formTitle.trim();
+    if (!title) return;
+    const ev = addLocalEvent({
+      title,
+      startsAt: `${selectedDate}T${formStart}:00`,
+      endsAt: `${selectedDate}T${formEnd}:00`,
+      location: formLocation.trim() || undefined,
+    });
+    setLocalEvents((prev) => [...prev, ev]);
+    closeForm();
+  }
+
+  function handleDelete(id: string) {
+    deleteLocalEvent(id);
+    setLocalEvents((prev) => prev.filter((e) => e.id !== id));
+  }
+
   return (
     <section className="panel p-8">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_55%_at_50%_0%,rgba(139,92,246,0.10),transparent)]" />
 
-      <div className="relative grid gap-8 lg:grid-cols-[1fr_minmax(240px,300px)]">
+      <div className="relative flex flex-col gap-6">
 
-        {/* ── Month grid ──────────────────────────────────────────── */}
-        <div>
-          {/* Header */}
-          <div className="mb-5 flex items-center gap-2">
-            <p className="panel-title text-violet-400/60">Kalender</p>
-            <div className="ml-auto flex items-center gap-1">
+        {/* ── Header ─────────────────────────────────────────────── */}
+        <div className="flex items-center gap-2">
+          <p className="panel-title text-violet-400/60">Kalender</p>
+          <div className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
+              className="flex h-12 w-12 items-center justify-center rounded-xl text-white/40 transition hover:bg-white/[0.07] hover:text-white active:scale-95"
+              aria-label="Vorheriger Monat"
+            >
+              <ChevronLeft />
+            </button>
+            <span className="min-w-[11rem] text-center text-base font-bold capitalize text-white/80">
+              {monthLabel}
+            </span>
+            <button
+              type="button"
+              onClick={() => setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
+              className="flex h-12 w-12 items-center justify-center rounded-xl text-white/40 transition hover:bg-white/[0.07] hover:text-white active:scale-95"
+              aria-label="Nächster Monat"
+            >
+              <ChevronRight />
+            </button>
+            {!isCurrentMonth && (
               <button
                 type="button"
-                onClick={() => setViewMonth(m => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/35 transition hover:bg-white/[0.07] hover:text-white/80"
-                aria-label="Vorheriger Monat"
+                onClick={() => {
+                  setViewMonth(new Date(now.getFullYear(), now.getMonth(), 1));
+                  setSelectedDate(todayStr);
+                  setShowForm(false);
+                }}
+                className="h-12 rounded-xl border border-white/[0.08] px-4 text-sm text-white/40 transition hover:bg-white/[0.06] hover:text-white/70 active:scale-95"
               >
-                <ChevronLeft />
+                Heute
               </button>
-              <span className="min-w-[10rem] text-center text-sm font-semibold capitalize text-white/75">
-                {monthLabel}
-              </span>
-              <button
-                type="button"
-                onClick={() => setViewMonth(m => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-white/35 transition hover:bg-white/[0.07] hover:text-white/80"
-                aria-label="Nächster Monat"
-              >
-                <ChevronRight />
-              </button>
-              {/* Jump to today */}
-              {viewMonth.getMonth() !== new Date().getMonth() || viewMonth.getFullYear() !== new Date().getFullYear() ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const n = new Date();
-                    setViewMonth(new Date(n.getFullYear(), n.getMonth(), 1));
-                    setSelectedDate(todayStr);
-                  }}
-                  className="ml-2 rounded-lg border border-white/[0.08] px-3 py-1 text-xs text-white/40 transition hover:bg-white/[0.06] hover:text-white/70"
-                >
-                  Heute
-                </button>
-              ) : null}
-            </div>
-          </div>
-
-          {/* Weekday labels */}
-          <div className="mb-1 grid grid-cols-7">
-            {WEEKDAYS.map(wd => (
-              <div key={wd} className="py-1.5 text-center text-[0.6rem] font-bold uppercase tracking-[0.3em] text-white/20">
-                {wd}
-              </div>
-            ))}
-          </div>
-
-          {/* Day cells */}
-          <div className="grid grid-cols-7 gap-0.5">
-            {days.map((day, i) => {
-              if (!day) return <div key={`e-${i}`} />;
-
-              const ds = toDateStr(day);
-              const isToday = ds === todayStr;
-              const isSel = ds === selectedDate;
-              const hasEvents = !!eventsByDate[ds]?.length;
-              const now = new Date();
-              const isPast = day < new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-              return (
-                <button
-                  key={ds}
-                  type="button"
-                  onClick={() => setSelectedDate(ds)}
-                  className={[
-                    'relative flex flex-col items-center justify-center rounded-xl py-1.5 text-base tabular-nums transition focus:outline-none',
-                    isSel
-                      ? 'bg-violet-500/80 font-bold text-white shadow-md'
-                      : isToday
-                        ? 'bg-violet-400/15 font-bold text-violet-300 ring-1 ring-violet-400/30'
-                        : isPast
-                          ? 'text-white/20 hover:bg-white/[0.04]'
-                          : 'text-white/65 hover:bg-white/[0.06]',
-                  ].join(' ')}
-                >
-                  {day.getDate()}
-                  {hasEvents && (
-                    <span
-                      className={[
-                        'absolute bottom-1 h-1 w-1 rounded-full',
-                        isSel ? 'bg-white/60' : 'bg-violet-400/70',
-                      ].join(' ')}
-                    />
-                  )}
-                </button>
-              );
-            })}
+            )}
+            {/* Add-appointment button */}
+            <button
+              type="button"
+              onClick={showForm ? closeForm : openForm}
+              className={[
+                'ml-1 flex h-12 w-12 items-center justify-center rounded-xl transition active:scale-95',
+                showForm
+                  ? 'bg-white/[0.08] text-white/60 hover:bg-white/[0.12]'
+                  : 'bg-violet-500/70 text-white hover:bg-violet-500/90',
+              ].join(' ')}
+              aria-label={showForm ? 'Abbrechen' : 'Neuer Termin'}
+            >
+              {showForm ? <XIcon /> : <PlusIcon />}
+            </button>
           </div>
         </div>
 
-        {/* ── Day detail ─────────────────────────────────────────── */}
-        <div className="flex flex-col gap-4 border-t border-white/[0.05] pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-sm font-semibold capitalize text-white/50">{selectedLabel}</p>
-            {selectedEvents.length > 0 && (
-              <span className="rounded-full bg-violet-400/10 px-2.5 py-0.5 text-xs font-bold tabular-nums text-violet-300/80">
-                {selectedEvents.length}
-              </span>
-            )}
-          </div>
-
-          <div className="flex flex-col gap-2.5 overflow-y-auto" style={{ maxHeight: 230 }}>
-            {selectedEvents.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/[0.07] px-4 py-8 text-center">
-                <p className="text-sm text-white/25">Keine Termine</p>
+        {/* ── Add-event form (slides in below header) ─────────────── */}
+        {showForm && (
+          <form
+            onSubmit={handleSave}
+            className="flex flex-col gap-3 rounded-2xl border border-violet-400/15 bg-violet-500/[0.06] p-5"
+          >
+            <p className="mb-1 text-sm font-semibold capitalize text-white/50">{selectedLabel}</p>
+            <input
+              type="text"
+              value={formTitle}
+              onChange={(e) => setFormTitle(e.target.value)}
+              placeholder="Titel *"
+              autoFocus
+              required
+              className="touch-input"
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="mb-1.5 block text-[0.6rem] font-bold uppercase tracking-widest text-white/25">
+                  Von
+                </label>
+                <input
+                  type="time"
+                  value={formStart}
+                  onChange={(e) => setFormStart(e.target.value)}
+                  className="touch-input"
+                />
               </div>
-            ) : (
-              selectedEvents.map(ev => (
-                <article key={ev.id} className="flex items-start gap-3 rounded-xl bg-white/[0.04] px-4 py-3.5">
-                  <div className="mt-0.5 w-0.5 self-stretch shrink-0 rounded-full bg-violet-400/60" />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-white">{ev.title}</p>
-                    <p className="mt-0.5 text-xs text-white/40">
-                      {formatTime(new Date(ev.startsAt))} – {formatTime(new Date(ev.endsAt))}
-                      {ev.location ? ` · ${ev.location}` : ''}
-                    </p>
-                  </div>
-                </article>
-              ))
-            )}
-          </div>
+              <div>
+                <label className="mb-1.5 block text-[0.6rem] font-bold uppercase tracking-widest text-white/25">
+                  Bis
+                </label>
+                <input
+                  type="time"
+                  value={formEnd}
+                  onChange={(e) => setFormEnd(e.target.value)}
+                  className="touch-input"
+                />
+              </div>
+            </div>
+            <input
+              type="text"
+              value={formLocation}
+              onChange={(e) => setFormLocation(e.target.value)}
+              placeholder="Ort (optional)"
+              className="touch-input"
+            />
+            <div className="mt-1 grid grid-cols-2 gap-3">
+              <button type="button" onClick={closeForm} className="touch-btn-secondary">
+                Abbrechen
+              </button>
+              <button
+                type="submit"
+                disabled={!formTitle.trim()}
+                className="flex h-16 w-full items-center justify-center rounded-2xl bg-violet-500/80 px-6 text-xl font-semibold text-white transition hover:bg-violet-500/90 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Speichern
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* ── Weekday labels ──────────────────────────────────────── */}
+        <div className="grid grid-cols-7">
+          {WEEKDAYS.map((wd) => (
+            <div
+              key={wd}
+              className="py-2 text-center text-[0.6rem] font-bold uppercase tracking-[0.3em] text-white/20"
+            >
+              {wd}
+            </div>
+          ))}
+        </div>
+
+        {/* ── Day cells — h-12 = 48px touch target ───────────────── */}
+        <div className="-mt-4 grid grid-cols-7 gap-1">
+          {days.map((day, i) => {
+            if (!day) return <div key={`e-${i}`} />;
+            const ds = toDateStr(day);
+            const isToday = ds === todayStr;
+            const isSel = ds === selectedDate;
+            const hasEvents = !!eventsByDate[ds]?.length;
+            const today0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const isPast = day < today0;
+
+            return (
+              <button
+                key={ds}
+                type="button"
+                onClick={() => {
+                  setSelectedDate(ds);
+                  setShowForm(false);
+                }}
+                className={[
+                  'relative flex h-12 flex-col items-center justify-center rounded-xl text-lg tabular-nums transition focus:outline-none active:scale-95',
+                  isSel
+                    ? 'bg-violet-500/80 font-bold text-white shadow-md'
+                    : isToday
+                      ? 'bg-violet-400/15 font-bold text-violet-300 ring-1 ring-violet-400/30'
+                      : isPast
+                        ? 'text-white/22 hover:bg-white/[0.04]'
+                        : 'text-white/70 hover:bg-white/[0.07]',
+                ].join(' ')}
+              >
+                {day.getDate()}
+                {hasEvents && (
+                  <span
+                    className={[
+                      'absolute bottom-1.5 h-1 w-1 rounded-full',
+                      isSel ? 'bg-white/60' : 'bg-violet-400/70',
+                    ].join(' ')}
+                  />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
     </section>

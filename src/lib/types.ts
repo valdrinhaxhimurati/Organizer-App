@@ -4,7 +4,7 @@ export type CalendarEvent = {
   startsAt: string;
   endsAt: string;
   location?: string;
-  source: 'mock' | 'outlook';
+  source: 'mock' | 'outlook' | 'local';
 };
 
 export type TodoItem = {
