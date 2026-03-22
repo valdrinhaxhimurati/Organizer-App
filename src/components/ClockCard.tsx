@@ -15,12 +15,12 @@ export function ClockCard() {
       <div className="relative flex h-full min-h-[200px] flex-col justify-between gap-4">
         <p className="panel-title text-blue-300/55">Uhr</p>
         <h1
-          className="tabular-nums leading-none font-black tracking-tight text-white"
+          className="text-primary-token tabular-nums leading-none font-black tracking-tight"
           style={{ fontSize: 'clamp(4.5rem, 9vw, 8rem)' }}
         >
           {formatTime(now)}
         </h1>
-        <p className="text-xl font-semibold capitalize text-slate-300/55">{formatDate(now)}</p>
+        <p className="text-secondary-token text-xl font-semibold capitalize">{formatDate(now)}</p>
       </div>
     </section>
   );

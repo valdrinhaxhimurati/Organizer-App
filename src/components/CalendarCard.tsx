@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { CalendarEvent } from '../lib/types';
-import { formatTime } from '../lib/utils';
-import { addLocalEvent, deleteLocalEvent, getLocalEvents } from '../services/localEvents';
+import { addLocalEvent, getLocalEvents } from '../services/localEvents';
 
 type Props = { events: CalendarEvent[] };
 
@@ -89,14 +88,6 @@ export function CalendarCard({ events }: Props) {
     return map;
   }, [allEvents]);
 
-  const selectedEvents = useMemo(
-    () =>
-      (eventsByDate[selectedDate] ?? [])
-        .slice()
-        .sort((a, b) => a.startsAt.localeCompare(b.startsAt)),
-    [eventsByDate, selectedDate],
-  );
-
   const selectedLabel = new Date(`${selectedDate}T00:00:00`).toLocaleDateString('de-CH', {
     weekday: 'long',
     day: 'numeric',
@@ -132,11 +123,6 @@ export function CalendarCard({ events }: Props) {
     closeForm();
   }
 
-  function handleDelete(id: string) {
-    deleteLocalEvent(id);
-    setLocalEvents((prev) => prev.filter((e) => e.id !== id));
-  }
-
   return (
     <section className="panel p-8">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_55%_at_50%_0%,rgba(59,130,246,0.09),transparent)]" />
@@ -155,7 +141,7 @@ export function CalendarCard({ events }: Props) {
             >
               <ChevronLeft />
             </button>
-            <span className="min-w-[11rem] text-center text-base font-bold capitalize text-white/80">
+            <span className="text-primary-token min-w-[11rem] text-center text-base font-bold capitalize">
               {monthLabel}
             </span>
             <button
@@ -202,7 +188,7 @@ export function CalendarCard({ events }: Props) {
             onSubmit={handleSave}
             className="flex flex-col gap-3 rounded-2xl border border-blue-400/15 bg-blue-400/[0.06] p-5"
           >
-            <p className="mb-1 text-sm font-semibold capitalize text-slate-300/65">{selectedLabel}</p>
+            <p className="text-secondary-token mb-1 text-sm font-semibold capitalize">{selectedLabel}</p>
             <input
               type="text"
               value={formTitle}
@@ -214,7 +200,7 @@ export function CalendarCard({ events }: Props) {
             />
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1.5 block text-[0.6rem] font-bold uppercase tracking-widest text-white/25">
+                <label className="text-faint-token mb-1.5 block text-[0.6rem] font-bold uppercase tracking-widest">
                   Von
                 </label>
                 <input
@@ -225,7 +211,7 @@ export function CalendarCard({ events }: Props) {
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-[0.6rem] font-bold uppercase tracking-widest text-white/25">
+                <label className="text-faint-token mb-1.5 block text-[0.6rem] font-bold uppercase tracking-widest">
                   Bis
                 </label>
                 <input
@@ -263,7 +249,7 @@ export function CalendarCard({ events }: Props) {
           {WEEKDAYS.map((wd) => (
             <div
               key={wd}
-              className="py-2 text-center text-[0.6rem] font-bold uppercase tracking-[0.3em] text-white/20"
+              className="text-faint-token py-2 text-center text-[0.6rem] font-bold uppercase tracking-[0.3em]"
             >
               {wd}
             </div>

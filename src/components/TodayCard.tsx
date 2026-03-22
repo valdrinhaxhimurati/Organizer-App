@@ -12,14 +12,14 @@ export function TodayCard({ todayEvents }: Props) {
       <div className="relative">
         <div className="flex items-center justify-between gap-3">
           <p className="panel-title text-slate-300/55">Heute im Fokus</p>
-          <span className="rounded-full border border-amber-400/15 bg-amber-400/[0.08] px-3 py-1 text-sm font-bold text-amber-200/85">
+          <span className="chip-warning rounded-full px-3 py-1 text-sm font-bold text-amber-200/85">
             {todayEvents.length} {todayEvents.length === 1 ? 'Termin' : 'Termine'}
           </span>
         </div>
         <div className="mt-6 space-y-3">
           {todayEvents.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-white/[0.07] px-6 py-10 text-center">
-              <p className="text-xl text-white/30">Heute kein Termin</p>
+              <p className="text-faint-token text-xl">Heute kein Termin</p>
             </div>
           ) : (
             todayEvents.map((event) => (
@@ -29,16 +29,16 @@ export function TodayCard({ todayEvents }: Props) {
               >
                 <div className="mt-1 w-1 shrink-0 self-stretch rounded-full bg-amber-400/70" />
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate text-2xl font-semibold text-white">{event.title}</h3>
+                  <h3 className="text-primary-token truncate text-2xl font-semibold">{event.title}</h3>
                   {event.location && (
-                    <p className="mt-1 truncate text-base text-slate-300/55">{event.location}</p>
+                    <p className="text-secondary-token mt-1 truncate text-base">{event.location}</p>
                   )}
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="text-xl font-bold tabular-nums text-white">
+                  <p className="text-primary-token text-xl font-bold tabular-nums">
                     {formatTime(new Date(event.startsAt))}
                   </p>
-                  <p className="text-sm tabular-nums text-slate-400/75">
+                  <p className="text-muted-token text-sm tabular-nums">
                     – {formatTime(new Date(event.endsAt))}
                   </p>
                 </div>

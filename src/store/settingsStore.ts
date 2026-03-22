@@ -17,7 +17,8 @@ export const useSettingsStore = create<SettingsState>()(
         city: 'Zuerich',
         latitude: defaultLat,
         longitude: defaultLon,
-        weatherRefreshMinutes: 15
+        weatherRefreshMinutes: 15,
+        theme: 'dark'
       },
       updateSettings: (patch) =>
         set((state) => ({

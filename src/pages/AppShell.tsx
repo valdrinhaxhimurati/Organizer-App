@@ -36,7 +36,7 @@ export function AppShell() {
   }, [calendarQuery.data]);
 
   return (
-    <main className="min-h-screen px-8 py-8 text-white xl:px-12">
+    <main className="app-shell min-h-screen px-8 py-8 xl:px-12">
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-[1440px] flex-col gap-6">
         {/* Navigation */}
         <NavBar />

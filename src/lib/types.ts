@@ -27,4 +27,5 @@ export type AppSettings = {
   latitude: number;
   longitude: number;
   weatherRefreshMinutes: number;
+  theme: 'dark' | 'light';
 };

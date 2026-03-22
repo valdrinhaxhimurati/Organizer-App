@@ -91,7 +91,7 @@ export function ShoppingCard() {
       </form>
 
       {items.length === 0 && (
-        <p className="mt-8 text-center text-xl text-white/25">Keine Artikel — füge etwas hinzu!</p>
+        <p className="text-faint-token mt-8 text-center text-xl">Keine Artikel — füge etwas hinzu!</p>
       )}
 
       {/* Unchecked items */}
@@ -140,8 +140,8 @@ function Row({
       <span
         className={
           item.checked
-            ? 'flex-1 text-xl text-zinc-500 line-through'
-            : 'flex-1 text-xl text-white'
+            ? 'text-muted-token flex-1 text-xl line-through'
+            : 'text-primary-token flex-1 text-xl'
         }
       >
         {item.label}

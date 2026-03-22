@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { registerSW } from 'virtual:pwa-register';
 import { msalInstance, getMsalAccount } from './lib/msal';
 import { useAuthStore } from './store/authStore';
+import { useSettingsStore } from './store/settingsStore';
 import { AppShell } from './pages/AppShell';
 import { SettingsPage } from './pages/SettingsPage';
 import './styles.css';
@@ -18,6 +19,10 @@ if (existingAccount) {
   useAuthStore.getState().setAccount(existingAccount);
 }
 useAuthStore.getState().setInitialized(true);
+
+const initialTheme = useSettingsStore.getState().settings.theme;
+document.documentElement.dataset.theme = initialTheme;
+document.documentElement.style.colorScheme = initialTheme;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,9 +40,21 @@ const router = createBrowserRouter([
 
 registerSW({ immediate: true });
 
+function ThemeController() {
+  const theme = useSettingsStore((state) => state.settings.theme);
+
+  React.useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+  }, [theme]);
+
+  return null;
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
+      <ThemeController />
       <RouterProvider router={router} />
     </QueryClientProvider>
   </React.StrictMode>,

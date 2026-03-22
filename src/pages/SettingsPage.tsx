@@ -65,6 +65,30 @@ function TrashIcon() {
   );
 }
 
+function MoonIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
+    </svg>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2" />
+      <path d="M12 20v2" />
+      <path d="m4.93 4.93 1.41 1.41" />
+      <path d="m17.66 17.66 1.41 1.41" />
+      <path d="M2 12h2" />
+      <path d="M20 12h2" />
+      <path d="m6.34 17.66-1.41 1.41" />
+      <path d="m19.07 4.93-1.41 1.41" />
+    </svg>
+  );
+}
+
 /* ─── Reusable field label ───────────────────────────────────────────────── */
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return <span className="text-[0.8rem] font-semibold uppercase tracking-[0.32em] text-slate-400/75">{children}</span>;
@@ -77,6 +101,48 @@ function SectionHeader({ icon, label, accent }: { icon: React.ReactNode; label: 
       {icon}
       <span className="text-[0.65rem] font-bold uppercase tracking-[0.42em] opacity-70">{label}</span>
     </div>
+  );
+}
+
+function AppearanceSettings() {
+  const { settings, updateSettings } = useSettingsStore();
+
+  return (
+    <section className="panel p-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(59,130,246,0.07),transparent)]" />
+      <div className="relative grid gap-6">
+        <SectionHeader icon={<SunIcon />} label="Erscheinungsbild" accent="text-blue-300" />
+
+        <div className="grid gap-3">
+          <FieldLabel>Theme</FieldLabel>
+          <div className="segmented w-fit">
+            <button
+              type="button"
+              onClick={() => updateSettings({ theme: 'dark' })}
+              className={['segmented-option', settings.theme === 'dark' ? 'is-active' : ''].join(' ')}
+            >
+              <MoonIcon />
+              Dunkel
+            </button>
+            <button
+              type="button"
+              onClick={() => updateSettings({ theme: 'light' })}
+              className={['segmented-option', settings.theme === 'light' ? 'is-active' : ''].join(' ')}
+            >
+              <SunIcon />
+              Hell
+            </button>
+          </div>
+        </div>
+
+        <div className="surface-subtle rounded-2xl p-5">
+          <p className="text-sm font-semibold text-primary-token">Richtung</p>
+          <p className="mt-2 text-sm leading-relaxed text-secondary-token">
+            Premium, ruhig und produktiv: neutrale Flächen, ein blauer Primärakzent und Statusfarben nur dort, wo sie semantisch wirklich Sinn ergeben.
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -353,10 +419,11 @@ function DataSettings() {
 /* ─── Main Settings page ─────────────────────────────────────────────────── */
 export function SettingsPage() {
   return (
-    <main className="min-h-screen px-8 py-8 text-white xl:px-12">
+    <main className="app-shell min-h-screen px-8 py-8 xl:px-12">
       <div className="mx-auto flex max-w-[1440px] flex-col gap-6">
         <NavBar />
         <div className="grid grid-cols-1 gap-6 pb-12 xl:grid-cols-2">
+          <AppearanceSettings />
           <WeatherSettings />
           <OutlookSettings />
           <div className="xl:col-span-2">

@@ -69,13 +69,13 @@ function SortableRow({
       <span className="flex-1 text-left">
         <span
           className={
-            todo.done ? 'text-xl text-white/30 line-through' : 'text-xl font-semibold text-white'
+            todo.done ? 'text-faint-token text-xl line-through' : 'text-primary-token text-xl font-semibold'
           }
         >
           {todo.title}
         </span>
         {todo.dueDate ? (
-          <span className="mt-1 block text-lg text-zinc-400">
+          <span className="text-muted-token mt-1 block text-lg">
             Fällig: {new Date(todo.dueDate).toLocaleDateString('de-CH')}
           </span>
         ) : null}
@@ -142,7 +142,7 @@ export function TodosCard() {
       <div className="relative">
       <div className="flex items-center justify-between gap-3">
         <p className="panel-title text-blue-300/55">To-dos</p>
-        <span className="rounded-full border border-blue-400/15 bg-blue-400/[0.08] px-3 py-1 text-sm font-bold text-blue-200/80">
+        <span className="chip-accent rounded-full px-3 py-1 text-sm font-bold">
           {todos.filter((t) => !t.done).length} offen
         </span>
       </div>
@@ -154,7 +154,7 @@ export function TodosCard() {
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="Neue Aufgabe…"
-          className="h-14 flex-1 min-w-0 rounded-xl border border-slate-400/12 bg-white/[0.04] px-5 text-xl text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/35"
+          className="h-14 flex-1 min-w-0 rounded-xl border border-slate-400/12 bg-white/[0.04] px-5 text-xl text-primary-token placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/35"
         />
         <button
           type="submit"

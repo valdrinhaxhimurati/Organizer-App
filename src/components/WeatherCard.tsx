@@ -33,7 +33,7 @@ export function WeatherCard() {
         <p className="panel-title text-blue-300/55">Wetter · {settings.city}</p>
         <div className="mt-3 flex items-end gap-4">
           <span
-            className="tabular-nums leading-none font-black text-white"
+            className="text-primary-token tabular-nums leading-none font-black"
             style={{ fontSize: 'clamp(3.5rem, 6vw, 5.5rem)' }}
           >
             {data ? `${Math.round(data.temperature)}°` : '--°'}
@@ -42,19 +42,19 @@ export function WeatherCard() {
             <span className="mb-1.5 text-5xl leading-none">{weatherEmoji(data.weatherCode)}</span>
           )}
         </div>
-        <p className="mt-2.5 text-xl font-medium text-slate-300/55">
+        <p className="text-secondary-token mt-2.5 text-xl font-medium">
           {data ? weatherLabel(data.weatherCode) : 'Lade Wetterdaten…'}
         </p>
         <div className="mt-7 grid grid-cols-2 gap-3">
           <div className="rounded-2xl border border-slate-400/10 bg-white/[0.03] p-4">
-            <p className="text-[0.65rem] font-bold uppercase tracking-[0.38em] text-slate-400/70">Wind</p>
-            <p className="mt-2 text-2xl font-bold tabular-nums text-white">
+            <p className="text-muted-token text-[0.65rem] font-bold uppercase tracking-[0.38em]">Wind</p>
+            <p className="text-primary-token mt-2 text-2xl font-bold tabular-nums">
               {data ? `${Math.round(data.windSpeed)} km/h` : '--'}
             </p>
           </div>
           <div className="rounded-2xl border border-slate-400/10 bg-white/[0.03] p-4">
-            <p className="text-[0.65rem] font-bold uppercase tracking-[0.38em] text-slate-400/70">Aktualisiert</p>
-            <p className="mt-2 text-2xl font-bold tabular-nums text-white">
+            <p className="text-muted-token text-[0.65rem] font-bold uppercase tracking-[0.38em]">Aktualisiert</p>
+            <p className="text-primary-token mt-2 text-2xl font-bold tabular-nums">
               {data
                 ? new Date(data.fetchedAt).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })
                 : '--'}
