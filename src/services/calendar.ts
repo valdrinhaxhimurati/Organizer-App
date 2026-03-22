@@ -1,8 +1,19 @@
 import type { CalendarEvent } from '../lib/types';
-
-const now = new Date();
+import { fetchOutlookEvents } from './outlook';
+import { useAuthStore } from '../store/authStore';
 
 export async function getCalendarEvents(): Promise<CalendarEvent[]> {
+  const account = useAuthStore.getState().account;
+  if (account) {
+    const events = await fetchOutlookEvents(14);
+    if (events.length > 0) return events;
+    // fall through to mock data if fetch returned nothing
+  }
+  return getMockEvents();
+}
+
+function getMockEvents(): CalendarEvent[] {
+  const now = new Date();
   return [
     {
       id: '1',
@@ -34,6 +45,6 @@ export async function getCalendarEvents(): Promise<CalendarEvent[]> {
       endsAt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 4, 21, 0).toISOString(),
       location: 'Wohnzimmer',
       source: 'mock'
-    }
+    },
   ];
 }
