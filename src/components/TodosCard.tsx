@@ -38,7 +38,7 @@ function SortableRow({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex w-full items-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.04] px-4 py-3.5"
+      className="flex w-full items-center gap-3 rounded-2xl border border-slate-400/10 bg-white/[0.03] px-4 py-3.5"
     >
       {/* drag handle */}
       <button
@@ -58,7 +58,7 @@ function SortableRow({
         className={[
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm transition',
           todo.done
-            ? 'border-violet-400/50 bg-violet-400/15 text-violet-200'
+            ? 'border-emerald-400/45 bg-emerald-400/12 text-emerald-200'
             : 'border-white/20 text-white/20 hover:border-white/50',
         ].join(' ')}
       >
@@ -138,11 +138,11 @@ export function TodosCard() {
 
   return (
     <section className="panel p-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(139,92,246,0.10),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.08),transparent)]" />
       <div className="relative">
       <div className="flex items-center justify-between gap-3">
-        <p className="panel-title text-violet-400/60">To-dos</p>
-        <span className="rounded-full bg-violet-400/10 px-3 py-1 text-sm font-bold text-violet-300/80">
+        <p className="panel-title text-blue-300/55">To-dos</p>
+        <span className="rounded-full border border-blue-400/15 bg-blue-400/[0.08] px-3 py-1 text-sm font-bold text-blue-200/80">
           {todos.filter((t) => !t.done).length} offen
         </span>
       </div>
@@ -154,12 +154,12 @@ export function TodosCard() {
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="Neue Aufgabe…"
-          className="h-14 flex-1 min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.05] px-5 text-xl text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-violet-400/35"
+          className="h-14 flex-1 min-w-0 rounded-xl border border-slate-400/12 bg-white/[0.04] px-5 text-xl text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/35"
         />
         <button
           type="submit"
           disabled={!newTitle.trim()}
-          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-violet-500/80 text-3xl font-bold text-white transition hover:bg-violet-500/90 disabled:opacity-30"
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-blue-500/85 text-3xl font-bold text-white transition hover:bg-blue-500 disabled:opacity-30"
         >
           +
         </button>

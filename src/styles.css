@@ -5,12 +5,19 @@
   font-family: 'Inter', 'Segoe UI Variable Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #08090f;
+  --bg-app: #08111d;
+  --surface: rgba(16, 24, 39, 0.82);
+  --border-subtle: rgba(148, 163, 184, 0.14);
+  --text-primary: #e7eef8;
+  --text-muted: rgba(148, 163, 184, 0.58);
+  --accent: #60a5fa;
+  --accent-strong: #3b82f6;
+  background-color: var(--bg-app);
   background-image:
-    radial-gradient(ellipse 110% 80% at -5% -5%, rgba(99, 102, 241, 0.22) 0%, transparent 55%),
-    radial-gradient(ellipse 80% 70% at 108% 108%, rgba(16, 185, 129, 0.11) 0%, transparent 50%);
+    radial-gradient(ellipse 120% 85% at -10% -10%, rgba(59, 130, 246, 0.16) 0%, transparent 58%),
+    radial-gradient(ellipse 90% 70% at 100% 100%, rgba(30, 41, 59, 0.42) 0%, transparent 54%);
   background-attachment: fixed;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 html, body, #root {
@@ -26,73 +33,66 @@ body {
 }
 
 .panel {
-  @apply relative overflow-hidden rounded-[1.75rem] border border-white/[0.07] bg-white/[0.04]
-         shadow-[0_4px_32px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)]
-         backdrop-blur-sm;
+  @apply relative overflow-hidden rounded-[1.75rem] backdrop-blur-md;
+  border: 1px solid var(--border-subtle);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+    var(--surface);
+  box-shadow:
+    0 16px 48px rgba(2, 6, 23, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .panel-title {
-  @apply text-[0.65rem] font-bold uppercase tracking-[0.42em] text-white/30;
+  @apply text-[0.65rem] font-bold uppercase tracking-[0.42em];
+  color: var(--text-muted);
 }
 
-/* ── Touch inputs & buttons (32" display) ─────────────────── */
 .touch-input {
-  @apply h-14 w-full rounded-xl border border-white/[0.08] bg-white/[0.05] px-5
-         text-xl text-white placeholder:text-white/25
-         focus:outline-none focus:ring-2 focus:ring-indigo-400/35;
+  @apply h-16 w-full rounded-2xl px-5 text-2xl focus:outline-none focus:ring-2;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  --tw-ring-color: rgba(96, 165, 250, 0.35);
 }
 
 .touch-btn-primary {
-  @apply flex h-14 w-full items-center justify-center rounded-xl bg-indigo-500/80 px-6
-         text-xl font-semibold text-white transition active:scale-[0.97]
-         hover:bg-indigo-500/90 disabled:opacity-40 disabled:cursor-not-allowed;
+  @apply flex h-16 w-full items-center justify-center rounded-2xl px-6 text-2xl font-semibold text-white transition active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed;
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.96), rgba(59, 130, 246, 0.92));
 }
 
 .touch-btn-secondary {
-  @apply flex h-14 w-full items-center justify-center rounded-xl border border-white/[0.09]
-         bg-white/[0.05] px-6 text-xl text-white/80 transition active:scale-[0.97]
-         hover:bg-white/[0.08];
+  @apply flex h-16 w-full items-center justify-center rounded-2xl px-6 text-2xl transition active:scale-[0.97];
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(226, 232, 240, 0.86);
 }
 
 .touch-btn-danger {
-  @apply flex h-14 w-full items-center justify-center rounded-xl bg-rose-500/70 px-6
-         text-xl font-semibold text-white transition active:scale-[0.97]
-         hover:bg-rose-500/80 disabled:opacity-40 disabled:cursor-not-allowed;
+  @apply flex h-16 w-full items-center justify-center rounded-2xl px-6 text-2xl font-semibold text-white transition active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed;
+  background: linear-gradient(180deg, rgba(244, 63, 94, 0.9), rgba(225, 29, 72, 0.82));
 }
 
-/* Prevent double-tap zoom */
 button, a {
   touch-action: manipulation;
 }
 
-/* Minimal scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 99px; }
-::-webkit-scrollbar-track { background: transparent; }
-
-/* ── Touch-screen button helpers (32" display) ── */
-.touch-btn-primary {
-  @apply flex h-16 w-full items-center justify-center rounded-2xl bg-sky-500/80 px-6 text-2xl font-semibold text-white transition active:scale-[0.97] active:bg-sky-500 disabled:opacity-40;
+.touch-input::placeholder {
+  color: rgba(148, 163, 184, 0.42);
 }
 
-.touch-btn-secondary {
-  @apply flex h-16 w-full items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-6 text-2xl text-zinc-200 transition active:scale-[0.97] active:bg-white/10;
+.touch-btn-primary:hover {
+  background: linear-gradient(180deg, rgba(96, 165, 250, 1), rgba(59, 130, 246, 0.96));
 }
 
-.touch-btn-danger {
-  @apply flex h-16 w-full items-center justify-center rounded-2xl bg-rose-500/70 px-6 text-2xl font-semibold text-white transition active:scale-[0.97] active:bg-rose-500 disabled:opacity-40;
+.touch-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.07);
 }
 
-.touch-input {
-  @apply h-16 w-full rounded-2xl border border-white/10 bg-white/5 px-5 text-2xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-sky-400/40;
+.touch-btn-danger:hover {
+  background: linear-gradient(180deg, rgba(244, 63, 94, 0.98), rgba(225, 29, 72, 0.9));
 }
 
-/* Prevent double-tap zoom on buttons (touch screens) */
-button, a {
-  touch-action: manipulation;
-}
-
-/* Scrollbar style */
 ::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.22); border-radius: 99px; }
 ::-webkit-scrollbar-track { background: transparent; }

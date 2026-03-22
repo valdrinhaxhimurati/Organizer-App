@@ -16,11 +16,11 @@ function dayNum(dateStr: string) {
 export function WeekCard({ weekEvents }: Props) {
   return (
     <section className="panel p-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_100%_0%,rgba(99,102,241,0.09),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_100%_0%,rgba(59,130,246,0.08),transparent)]" />
       <div className="relative">
         <div className="flex items-center justify-between gap-3">
-          <p className="panel-title text-indigo-400/60">Diese Woche</p>
-          <span className="rounded-full bg-indigo-400/10 px-3 py-1 text-sm font-bold text-indigo-300/70">
+          <p className="panel-title text-slate-300/55">Diese Woche</p>
+          <span className="rounded-full border border-blue-400/15 bg-blue-400/[0.08] px-3 py-1 text-sm font-bold text-blue-200/80">
             {weekEvents.length} {weekEvents.length === 1 ? 'Termin' : 'Termine'}
           </span>
         </div>
@@ -31,9 +31,9 @@ export function WeekCard({ weekEvents }: Props) {
             </div>
           ) : (
             weekEvents.map((event) => (
-              <article key={event.id} className="flex items-center gap-4 rounded-2xl bg-white/[0.04] px-4 py-4">
-                <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-indigo-500/15">
-                  <span className="text-[0.6rem] font-bold uppercase tracking-widest text-indigo-300/70">
+              <article key={event.id} className="flex items-center gap-4 rounded-2xl border border-slate-400/10 bg-white/[0.03] px-4 py-4">
+                <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl border border-blue-400/10 bg-blue-400/[0.08]">
+                  <span className="text-[0.6rem] font-bold uppercase tracking-widest text-blue-200/75">
                     {dayAbbr(event.startsAt)}
                   </span>
                   <span className="tabular-nums text-xl font-bold leading-tight text-white">
@@ -42,7 +42,7 @@ export function WeekCard({ weekEvents }: Props) {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h3 className="truncate text-xl font-semibold text-white">{event.title}</h3>
-                  <p className="mt-0.5 text-base text-white/40">
+                  <p className="mt-0.5 text-base text-slate-300/55">
                     {formatTime(new Date(event.startsAt))}
                     {event.location ? ` · ${event.location}` : ''}
                   </p>

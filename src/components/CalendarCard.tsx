@@ -139,13 +139,13 @@ export function CalendarCard({ events }: Props) {
 
   return (
     <section className="panel p-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_55%_at_50%_0%,rgba(139,92,246,0.10),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_55%_at_50%_0%,rgba(59,130,246,0.09),transparent)]" />
 
       <div className="relative flex flex-col gap-6">
 
         {/* ── Header ─────────────────────────────────────────────── */}
         <div className="flex items-center gap-2">
-          <p className="panel-title text-violet-400/60">Kalender</p>
+          <p className="panel-title text-blue-300/55">Kalender</p>
           <div className="ml-auto flex items-center gap-2">
             <button
               type="button"
@@ -187,7 +187,7 @@ export function CalendarCard({ events }: Props) {
                 'ml-1 flex h-12 w-12 items-center justify-center rounded-xl transition active:scale-95',
                 showForm
                   ? 'bg-white/[0.08] text-white/60 hover:bg-white/[0.12]'
-                  : 'bg-violet-500/70 text-white hover:bg-violet-500/90',
+                  : 'bg-blue-500/85 text-white hover:bg-blue-500',
               ].join(' ')}
               aria-label={showForm ? 'Abbrechen' : 'Neuer Termin'}
             >
@@ -200,9 +200,9 @@ export function CalendarCard({ events }: Props) {
         {showForm && (
           <form
             onSubmit={handleSave}
-            className="flex flex-col gap-3 rounded-2xl border border-violet-400/15 bg-violet-500/[0.06] p-5"
+            className="flex flex-col gap-3 rounded-2xl border border-blue-400/15 bg-blue-400/[0.06] p-5"
           >
-            <p className="mb-1 text-sm font-semibold capitalize text-white/50">{selectedLabel}</p>
+            <p className="mb-1 text-sm font-semibold capitalize text-slate-300/65">{selectedLabel}</p>
             <input
               type="text"
               value={formTitle}
@@ -250,7 +250,7 @@ export function CalendarCard({ events }: Props) {
               <button
                 type="submit"
                 disabled={!formTitle.trim()}
-                className="flex h-16 w-full items-center justify-center rounded-2xl bg-violet-500/80 px-6 text-xl font-semibold text-white transition hover:bg-violet-500/90 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex h-16 w-full items-center justify-center rounded-2xl bg-blue-500/85 px-6 text-xl font-semibold text-white transition hover:bg-blue-500 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Speichern
               </button>
@@ -292,9 +292,9 @@ export function CalendarCard({ events }: Props) {
                 className={[
                   'relative flex h-12 flex-col items-center justify-center rounded-xl text-lg tabular-nums transition focus:outline-none active:scale-95',
                   isSel
-                    ? 'bg-violet-500/80 font-bold text-white shadow-md'
+                    ? 'bg-blue-500/85 font-bold text-white shadow-md'
                     : isToday
-                      ? 'bg-violet-400/15 font-bold text-violet-300 ring-1 ring-violet-400/30'
+                      ? 'bg-blue-400/12 font-bold text-blue-200 ring-1 ring-blue-400/25'
                       : isPast
                         ? 'text-white/22 hover:bg-white/[0.04]'
                         : 'text-white/70 hover:bg-white/[0.07]',
@@ -305,7 +305,7 @@ export function CalendarCard({ events }: Props) {
                   <span
                     className={[
                       'absolute bottom-1.5 h-1 w-1 rounded-full',
-                      isSel ? 'bg-white/60' : 'bg-violet-400/70',
+                      isSel ? 'bg-white/60' : 'bg-blue-400/70',
                     ].join(' ')}
                   />
                 )}

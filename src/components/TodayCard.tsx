@@ -8,11 +8,11 @@ type Props = {
 export function TodayCard({ todayEvents }: Props) {
   return (
     <section className="panel p-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,rgba(245,158,11,0.10),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_0%,rgba(245,158,11,0.06),transparent)]" />
       <div className="relative">
         <div className="flex items-center justify-between gap-3">
-          <p className="panel-title text-amber-400/60">Heute im Fokus</p>
-          <span className="rounded-full bg-amber-400/10 px-3 py-1 text-sm font-bold text-amber-300/80">
+          <p className="panel-title text-slate-300/55">Heute im Fokus</p>
+          <span className="rounded-full border border-amber-400/15 bg-amber-400/[0.08] px-3 py-1 text-sm font-bold text-amber-200/85">
             {todayEvents.length} {todayEvents.length === 1 ? 'Termin' : 'Termine'}
           </span>
         </div>
@@ -25,20 +25,20 @@ export function TodayCard({ todayEvents }: Props) {
             todayEvents.map((event) => (
               <article
                 key={event.id}
-                className="flex items-start gap-4 overflow-hidden rounded-2xl bg-white/[0.04] px-5 py-4"
+                className="flex items-start gap-4 overflow-hidden rounded-2xl border border-slate-400/10 bg-white/[0.03] px-5 py-4"
               >
                 <div className="mt-1 w-1 shrink-0 self-stretch rounded-full bg-amber-400/70" />
                 <div className="min-w-0 flex-1">
                   <h3 className="truncate text-2xl font-semibold text-white">{event.title}</h3>
                   {event.location && (
-                    <p className="mt-1 truncate text-base text-white/40">{event.location}</p>
+                    <p className="mt-1 truncate text-base text-slate-300/55">{event.location}</p>
                   )}
                 </div>
                 <div className="shrink-0 text-right">
                   <p className="text-xl font-bold tabular-nums text-white">
                     {formatTime(new Date(event.startsAt))}
                   </p>
-                  <p className="text-sm tabular-nums text-white/35">
+                  <p className="text-sm tabular-nums text-slate-400/75">
                     – {formatTime(new Date(event.endsAt))}
                   </p>
                 </div>

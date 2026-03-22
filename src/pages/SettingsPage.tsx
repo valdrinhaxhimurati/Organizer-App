@@ -67,7 +67,7 @@ function TrashIcon() {
 
 /* ─── Reusable field label ───────────────────────────────────────────────── */
 function FieldLabel({ children }: { children: React.ReactNode }) {
-  return <span className="text-[0.8rem] font-semibold uppercase tracking-[0.32em] text-white/35">{children}</span>;
+  return <span className="text-[0.8rem] font-semibold uppercase tracking-[0.32em] text-slate-400/75">{children}</span>;
 }
 
 /* ─── Section header ─────────────────────────────────────────────────────── */
@@ -110,9 +110,9 @@ function WeatherSettings() {
 
   return (
     <section className="panel p-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_100%_0%,rgba(16,185,129,0.08),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_100%_0%,rgba(59,130,246,0.07),transparent)]" />
       <div className="relative grid gap-6">
-        <SectionHeader icon={<CloudIcon />} label="Wetter" accent="text-emerald-400" />
+        <SectionHeader icon={<CloudIcon />} label="Wetter" accent="text-blue-300" />
 
         <label className="grid gap-2">
           <FieldLabel>Ort / Stadt</FieldLabel>
@@ -157,7 +157,7 @@ function WeatherSettings() {
           onClick={save}
           className={[
             'touch-btn-primary transition-all',
-            saved ? 'bg-emerald-500/80 hover:bg-emerald-500/90' : '',
+            saved ? 'bg-emerald-500/85 hover:bg-emerald-500' : '',
           ].join(' ')}
         >
           {saved ? (
@@ -202,9 +202,9 @@ function OutlookSettings() {
   if (!isMsalConfigured) {
     return (
       <section className="panel p-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_0%_0%,rgba(99,102,241,0.08),transparent)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_0%_0%,rgba(59,130,246,0.07),transparent)]" />
         <div className="relative">
-          <SectionHeader icon={<CalendarIcon />} label="Outlook Kalender" accent="text-indigo-400" />
+          <SectionHeader icon={<CalendarIcon />} label="Outlook Kalender" accent="text-blue-300" />
           <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.06] p-6">
             <p className="text-base font-semibold text-amber-300/90">Azure App-ID fehlt</p>
             <p className="mt-2 text-sm leading-relaxed text-white/45">
@@ -228,9 +228,9 @@ function OutlookSettings() {
 
   return (
     <section className="panel p-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_0%_0%,rgba(99,102,241,0.08),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_0%_0%,rgba(59,130,246,0.07),transparent)]" />
       <div className="relative grid gap-6">
-        <SectionHeader icon={<CalendarIcon />} label="Outlook Kalender" accent="text-indigo-400" />
+        <SectionHeader icon={<CalendarIcon />} label="Outlook Kalender" accent="text-blue-300" />
 
         {account ? (
           <>
@@ -252,9 +252,9 @@ function OutlookSettings() {
           </>
         ) : (
           <>
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5 text-sm leading-relaxed text-white/40">
+            <div className="rounded-2xl border border-slate-400/10 bg-white/[0.03] p-5 text-sm leading-relaxed text-slate-300/60">
               Verbinde dein Microsoft-Konto um Outlook-Kalendertermine direkt auf dem Dashboard anzuzeigen.
-              <span className="mt-2 block text-white/25">Benötigte Berechtigung: Calendars.Read</span>
+              <span className="mt-2 block text-slate-400/60">Benötigte Berechtigung: Calendars.Read</span>
             </div>
             {error && (
               <p className="rounded-xl border border-rose-400/15 bg-rose-400/[0.06] px-4 py-3 text-sm text-rose-300/80">
@@ -297,9 +297,9 @@ function DataSettings() {
 
   return (
     <section className="panel p-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(14,165,233,0.07),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.07),transparent)]" />
       <div className="relative">
-        <SectionHeader icon={<DatabaseIcon />} label="Lokale Daten" accent="text-sky-400" />
+        <SectionHeader icon={<DatabaseIcon />} label="Lokale Daten" accent="text-blue-300" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <button
             type="button"
@@ -342,7 +342,7 @@ function DataSettings() {
             )}
           </button>
         </div>
-        <p className="mt-5 text-xs text-white/25">
+        <p className="mt-5 text-xs text-slate-400/60">
           Alle Daten werden ausschließlich im Browser-Speicher dieses Geräts gespeichert.
         </p>
       </div>

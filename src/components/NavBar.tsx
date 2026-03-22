@@ -24,12 +24,14 @@ export function NavBar() {
   const tab = (isActive: boolean) =>
     [
       'flex items-center gap-2.5 rounded-xl px-5 py-2.5 text-[0.92rem] font-semibold tracking-wide transition-all duration-150',
-      isActive ? 'bg-white/[0.09] text-white' : 'text-white/35 hover:text-white/65 hover:bg-white/[0.04]',
+      isActive
+        ? 'border border-blue-400/20 bg-blue-400/[0.10] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]'
+        : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]',
     ].join(' ');
 
   return (
-    <nav className="flex items-center gap-2 rounded-2xl border border-white/[0.06] bg-white/[0.025] px-3 py-3 backdrop-blur-sm">
-      <span className="mr-auto select-none pl-2 text-[1.05rem] font-extrabold tracking-tight text-white/50">
+    <nav className="flex items-center gap-2 rounded-2xl border border-slate-400/10 bg-slate-950/20 px-3 py-3 backdrop-blur-md">
+      <span className="mr-auto select-none pl-2 text-[1.05rem] font-extrabold tracking-tight text-slate-300/60">
         Familienplaner
       </span>
       <NavLink to="/" end className={({ isActive }) => tab(isActive)}>
