@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ClockCard } from '../components/ClockCard';
 import { SettingsCard } from '../components/SettingsCard';
+import { ShoppingCard } from '../components/ShoppingCard';
 import { TodayCard } from '../components/TodayCard';
 import { TodosCard } from '../components/TodosCard';
 import { WeatherCard } from '../components/WeatherCard';
@@ -34,11 +35,13 @@ export function AppShell() {
   return (
     <main className="min-h-screen px-6 py-6 text-white xl:px-8">
       <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-[1080px] flex-col gap-6">
+        {/* Top row: Clock + Weather */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.15fr_0.85fr]">
           <ClockCard />
           <WeatherCard />
         </div>
 
+        {/* Middle row: Calendar (left) | Todos + Shopping (right) */}
         <div className="grid flex-1 grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="grid gap-6">
             <TodayCard todayEvents={todayEvents} />
@@ -46,9 +49,12 @@ export function AppShell() {
           </div>
           <div className="grid gap-6">
             <TodosCard />
-            <SettingsCard />
+            <ShoppingCard />
           </div>
         </div>
+
+        {/* Bottom: Settings (full width, collapsible feel) */}
+        <SettingsCard />
       </div>
     </main>
   );

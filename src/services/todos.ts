@@ -67,3 +67,40 @@ export async function toggleTodo(id: string, done: boolean) {
     throw error;
   }
 }
+
+export async function addTodo(title: string): Promise<TodoItem> {
+  const newItem: TodoItem = {
+    id: `local-${Date.now()}`,
+    title,
+    done: false,
+  };
+
+  if (!supabase) {
+    const todos = readFallback();
+    todos.unshift(newItem);
+    writeFallback(todos);
+    return newItem;
+  }
+
+  const { data, error } = await supabase
+    .from('todos')
+    .insert({ title })
+    .select('id,title,notes,done,due_date')
+    .single();
+
+  if (error) {
+    // fallback to local on Supabase error
+    const todos = readFallback();
+    todos.unshift(newItem);
+    writeFallback(todos);
+    return newItem;
+  }
+
+  return {
+    id: data.id,
+    title: data.title,
+    notes: data.notes ?? undefined,
+    done: data.done,
+    dueDate: data.due_date ?? undefined,
+  };
+}
