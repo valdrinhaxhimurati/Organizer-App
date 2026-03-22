@@ -17,13 +17,38 @@ const msalConfig: Configuration = {
   },
 };
 
-export const msalInstance = new PublicClientApplication(msalConfig);
-
 export const CALENDAR_SCOPES = ['Calendars.Read', 'User.Read', 'offline_access'];
 
+let msalInstance: PublicClientApplication | null = null;
+let initializePromise: Promise<PublicClientApplication | null> | null = null;
+
+async function ensureMsalInitialized(): Promise<PublicClientApplication | null> {
+  if (!isMsalConfigured) {
+    return null;
+  }
+
+  if (msalInstance) {
+    return msalInstance;
+  }
+
+  if (!initializePromise) {
+    initializePromise = (async () => {
+      const instance = new PublicClientApplication(msalConfig);
+      await instance.initialize();
+      msalInstance = instance;
+      return instance;
+    })();
+  }
+
+  return initializePromise;
+}
+
 export async function msalSignIn(): Promise<AccountInfo | null> {
+  const instance = await ensureMsalInitialized();
+  if (!instance) return null;
+
   try {
-    const result = await msalInstance.loginPopup({ scopes: CALENDAR_SCOPES });
+    const result = await instance.loginPopup({ scopes: CALENDAR_SCOPES });
     return result.account;
   } catch {
     return null;
@@ -31,16 +56,22 @@ export async function msalSignIn(): Promise<AccountInfo | null> {
 }
 
 export async function msalSignOut(): Promise<void> {
-  const account = msalInstance.getAllAccounts()[0];
+  const instance = await ensureMsalInitialized();
+  if (!instance) return;
+
+  const account = instance.getAllAccounts()[0];
   if (!account) return;
-  await msalInstance.logoutPopup({ account });
+  await instance.logoutPopup({ account });
 }
 
 export async function getAccessToken(): Promise<string | null> {
-  const account = msalInstance.getAllAccounts()[0];
+  const instance = await ensureMsalInitialized();
+  if (!instance) return null;
+
+  const account = instance.getAllAccounts()[0];
   if (!account) return null;
   try {
-    const result = await msalInstance.acquireTokenSilent({
+    const result = await instance.acquireTokenSilent({
       scopes: CALENDAR_SCOPES,
       account,
     });
@@ -48,7 +79,7 @@ export async function getAccessToken(): Promise<string | null> {
   } catch {
     // Silent refresh failed → ask user to log in again via popup
     try {
-      const result = await msalInstance.acquireTokenPopup({ scopes: CALENDAR_SCOPES });
+      const result = await instance.acquireTokenPopup({ scopes: CALENDAR_SCOPES });
       return result.accessToken;
     } catch {
       return null;
@@ -56,6 +87,7 @@ export async function getAccessToken(): Promise<string | null> {
   }
 }
 
-export function getMsalAccount(): AccountInfo | null {
-  return msalInstance.getAllAccounts()[0] ?? null;
+export async function getMsalAccount(): Promise<AccountInfo | null> {
+  const instance = await ensureMsalInitialized();
+  return instance?.getAllAccounts()[0] ?? null;
 }

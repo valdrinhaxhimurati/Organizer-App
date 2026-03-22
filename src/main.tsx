@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { registerSW } from 'virtual:pwa-register';
-import { msalInstance, getMsalAccount } from './lib/msal';
-import { useAuthStore } from './store/authStore';
 import { useSettingsStore } from './store/settingsStore';
 import './styles.css';
 
@@ -14,16 +12,6 @@ const AppShellPage = React.lazy(() =>
 const SettingsPageView = React.lazy(() =>
   import('./pages/SettingsPage').then((module) => ({ default: module.SettingsPage }))
 );
-
-// Initialize MSAL before rendering so all components have an initialized instance
-await msalInstance.initialize();
-
-// Restore existing Microsoft account from MSAL cache (persisted in localStorage)
-const existingAccount = getMsalAccount();
-if (existingAccount) {
-  useAuthStore.getState().setAccount(existingAccount);
-}
-useAuthStore.getState().setInitialized(true);
 
 const initialTheme = useSettingsStore.getState().settings.theme;
 document.documentElement.dataset.theme = initialTheme;

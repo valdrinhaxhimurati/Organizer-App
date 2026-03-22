@@ -16,14 +16,23 @@ import { CSS } from '@dnd-kit/utilities';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRef, useState } from 'react';
 import type { TodoItem } from '../lib/types';
-import { addTodo, getTodos, toggleTodo } from '../services/todos';
+import { addTodo, getTodos, toggleTodo, updateTodoDueDate } from '../services/todos';
+
+function toDateInputValue(value?: string): string {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return date.toISOString().slice(0, 10);
+}
 
 function SortableRow({
   todo,
   onToggle,
+  onDueDateChange,
 }: {
   todo: TodoItem;
   onToggle: (id: string, done: boolean) => void;
+  onDueDateChange: (id: string, dueDate?: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: todo.id });
@@ -45,7 +54,7 @@ function SortableRow({
         type="button"
         {...attributes}
         {...listeners}
-        className="text-muted-token cursor-grab touch-none hover:text-slate-400 active:cursor-grabbing"
+        className="touch-target-comfortable text-muted-token flex cursor-grab touch-none items-center justify-center rounded-xl hover:bg-white/[0.04] hover:text-slate-300 active:cursor-grabbing"
         aria-label="Ziehen zum Sortieren"
       >
         ⠿
@@ -56,7 +65,7 @@ function SortableRow({
         type="button"
         onClick={() => onToggle(todo.id, !todo.done)}
         className={[
-          'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm transition',
+          'touch-target-comfortable flex shrink-0 items-center justify-center rounded-full border text-base transition',
           todo.done
             ? 'border-emerald-400/45 bg-emerald-400/12 text-emerald-200'
             : 'border-slate-400/20 text-slate-400/40 hover:border-slate-400/50',
@@ -74,11 +83,29 @@ function SortableRow({
         >
           {todo.title}
         </span>
-        {todo.dueDate ? (
-          <span className="text-muted-token mt-1 block text-lg">
-            Fällig: {new Date(todo.dueDate).toLocaleDateString('de-CH')}
-          </span>
-        ) : null}
+        <span className="mt-2 flex flex-wrap items-center gap-2">
+          <span className="text-muted-token text-sm font-medium">Fällig</span>
+          <input
+            type="date"
+            value={toDateInputValue(todo.dueDate)}
+            onChange={(event) => {
+              const nextValue = event.target.value
+                ? new Date(`${event.target.value}T12:00:00`).toISOString()
+                : undefined;
+              onDueDateChange(todo.id, nextValue);
+            }}
+            className="touch-target min-w-[11.5rem] rounded-lg border border-slate-400/12 bg-white/[0.04] px-3 text-sm text-primary-token focus:outline-none focus:ring-2 focus:ring-blue-400/35"
+          />
+          {todo.dueDate ? (
+            <button
+              type="button"
+              onClick={() => onDueDateChange(todo.id, undefined)}
+              className="touch-target rounded-lg border border-slate-400/12 px-3 py-2 text-sm text-muted-token transition hover:bg-white/[0.04] hover:text-primary-token"
+            >
+              Entfernen
+            </button>
+          ) : null}
+        </span>
       </span>
     </div>
   );
@@ -89,6 +116,7 @@ const STORAGE_KEY = 'organizer-todos';
 export function TodosCard() {
   const queryClient = useQueryClient();
   const [newTitle, setNewTitle] = useState('');
+  const [newDueDate, setNewDueDate] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   const todosQuery = useQuery({
@@ -102,12 +130,18 @@ export function TodosCard() {
   });
 
   const addMutation = useMutation({
-    mutationFn: (title: string) => addTodo(title),
+    mutationFn: ({ title, dueDate }: { title: string; dueDate?: string }) => addTodo(title, dueDate),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['todos'] });
       setNewTitle('');
+      setNewDueDate('');
       inputRef.current?.focus();
     },
+  });
+
+  const dueDateMutation = useMutation({
+    mutationFn: ({ id, dueDate }: { id: string; dueDate?: string }) => updateTodoDueDate(id, dueDate),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['todos'] }),
   });
 
   const sensors = useSensors(
@@ -133,7 +167,10 @@ export function TodosCard() {
     e.preventDefault();
     const title = newTitle.trim();
     if (!title) return;
-    addMutation.mutate(title);
+    addMutation.mutate({
+      title,
+      dueDate: newDueDate ? new Date(`${newDueDate}T12:00:00`).toISOString() : undefined,
+    });
   }
 
   return (
@@ -148,14 +185,26 @@ export function TodosCard() {
         </div>
 
         {/* Add-new form */}
-        <form onSubmit={handleAdd} className="mt-5 flex gap-3">
-          <input
-            ref={inputRef}
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
-            placeholder="Neue Aufgabe…"
-            className="h-14 flex-1 min-w-0 rounded-xl border border-slate-400/12 bg-white/[0.04] px-5 text-xl text-primary-token placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/35"
-          />
+        <form onSubmit={handleAdd} className="mt-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_13rem_auto] sm:items-end">
+          <label className="grid gap-2 sm:col-span-1">
+            <span className="text-muted-token text-xs font-semibold uppercase tracking-[0.18em]">Aufgabe</span>
+            <input
+              ref={inputRef}
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              placeholder="Neue Aufgabe…"
+              className="h-14 min-w-0 rounded-xl border border-slate-400/12 bg-white/[0.04] px-5 text-xl text-primary-token placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/35"
+            />
+          </label>
+          <label className="grid gap-2 sm:col-span-1">
+            <span className="text-muted-token text-xs font-semibold uppercase tracking-[0.18em]">Fällig</span>
+            <input
+              type="date"
+              value={newDueDate}
+              onChange={(e) => setNewDueDate(e.target.value)}
+              className="h-14 min-w-0 rounded-xl border border-slate-400/12 bg-white/[0.04] px-4 text-base text-primary-token focus:outline-none focus:ring-2 focus:ring-blue-400/35"
+            />
+          </label>
           <button
             type="submit"
             disabled={!newTitle.trim()}
@@ -174,6 +223,7 @@ export function TodosCard() {
                   key={todo.id}
                   todo={todo}
                   onToggle={(id, done) => toggleMutation.mutate({ id, done })}
+                  onDueDateChange={(id, dueDate) => dueDateMutation.mutate({ id, dueDate })}
                 />
               ))}
             </div>

@@ -1,10 +1,10 @@
 import type { CalendarEvent } from '../lib/types';
-import { fetchOutlookEvents } from './outlook';
 import { useAuthStore } from '../store/authStore';
 
 export async function getCalendarEvents(): Promise<CalendarEvent[]> {
   const account = useAuthStore.getState().account;
   if (account) {
+    const { fetchOutlookEvents } = await import('./outlook');
     const events = await fetchOutlookEvents(14);
     if (events.length > 0) return events;
     // fall through to mock data if fetch returned nothing

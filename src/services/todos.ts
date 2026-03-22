@@ -68,11 +68,27 @@ export async function toggleTodo(id: string, done: boolean) {
   }
 }
 
-export async function addTodo(title: string): Promise<TodoItem> {
+export async function updateTodoDueDate(id: string, dueDate?: string) {
+  if (!supabase) {
+    const todos = readFallback().map((item) =>
+      item.id === id ? { ...item, dueDate: dueDate || undefined } : item,
+    );
+    writeFallback(todos);
+    return;
+  }
+
+  const { error } = await supabase.from('todos').update({ due_date: dueDate || null }).eq('id', id);
+  if (error) {
+    throw error;
+  }
+}
+
+export async function addTodo(title: string, dueDate?: string): Promise<TodoItem> {
   const newItem: TodoItem = {
     id: `local-${Date.now()}`,
     title,
     done: false,
+    dueDate: dueDate || undefined,
   };
 
   if (!supabase) {
@@ -84,7 +100,7 @@ export async function addTodo(title: string): Promise<TodoItem> {
 
   const { data, error } = await supabase
     .from('todos')
-    .insert({ title })
+    .insert({ title, due_date: dueDate || null })
     .select('id,title,notes,done,due_date')
     .single();
 

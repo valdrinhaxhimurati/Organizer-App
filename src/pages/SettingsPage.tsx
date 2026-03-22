@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavBar } from '../components/NavBar';
-import { isMsalConfigured, msalSignIn, msalSignOut } from '../lib/msal';
 import { useAuthStore } from '../store/authStore';
 import { useSettingsStore } from '../store/settingsStore';
 
@@ -65,84 +64,31 @@ function TrashIcon() {
   );
 }
 
-function MoonIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" />
-    </svg>
-  );
-}
-
-function SunIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="4" />
-      <path d="M12 2v2" />
-      <path d="M12 20v2" />
-      <path d="m4.93 4.93 1.41 1.41" />
-      <path d="m17.66 17.66 1.41 1.41" />
-      <path d="M2 12h2" />
-      <path d="M20 12h2" />
-      <path d="m6.34 17.66-1.41 1.41" />
-      <path d="m19.07 4.93-1.41 1.41" />
-    </svg>
-  );
-}
-
 /* ─── Reusable field label ───────────────────────────────────────────────── */
 function FieldLabel({ children }: { children: React.ReactNode }) {
-  return <span className="text-[0.8rem] font-semibold uppercase tracking-[0.32em] text-slate-400/75">{children}</span>;
+  return <span className="text-[0.76rem] font-semibold uppercase tracking-[0.22em] text-slate-400/75">{children}</span>;
 }
 
 /* ─── Section header ─────────────────────────────────────────────────────── */
-function SectionHeader({ icon, label, accent }: { icon: React.ReactNode; label: string; accent: string }) {
+function SectionHeader({
+  icon,
+  label,
+  accent,
+  description,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  accent: string;
+  description?: string;
+}) {
   return (
-    <div className={`mb-7 flex items-center gap-2.5 ${accent}`}>
-      {icon}
-      <span className="text-[0.65rem] font-bold uppercase tracking-[0.42em] opacity-70">{label}</span>
-    </div>
-  );
-}
-
-function AppearanceSettings() {
-  const { settings, updateSettings } = useSettingsStore();
-
-  return (
-    <section className="panel p-8">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(59,130,246,0.07),transparent)]" />
-      <div className="relative grid gap-6">
-        <SectionHeader icon={<SunIcon />} label="Erscheinungsbild" accent="text-blue-300" />
-
-        <div className="grid gap-3">
-          <FieldLabel>Theme</FieldLabel>
-          <div className="segmented w-fit">
-            <button
-              type="button"
-              onClick={() => updateSettings({ theme: 'dark' })}
-              className={['segmented-option', settings.theme === 'dark' ? 'is-active' : ''].join(' ')}
-            >
-              <MoonIcon />
-              Dunkel
-            </button>
-            <button
-              type="button"
-              onClick={() => updateSettings({ theme: 'light' })}
-              className={['segmented-option', settings.theme === 'light' ? 'is-active' : ''].join(' ')}
-            >
-              <SunIcon />
-              Hell
-            </button>
-          </div>
-        </div>
-
-        <div className="surface-subtle rounded-2xl p-5">
-          <p className="text-sm font-semibold text-primary-token">Richtung</p>
-          <p className="mt-2 text-sm leading-relaxed text-secondary-token">
-            Premium, ruhig und produktiv: neutrale Flächen, ein blauer Primärakzent und Statusfarben nur dort, wo sie semantisch wirklich Sinn ergeben.
-          </p>
-        </div>
+    <div className="mb-6 grid gap-2">
+      <div className={`flex items-center gap-2.5 ${accent}`}>
+        {icon}
+        <span className="text-[0.65rem] font-bold uppercase tracking-[0.42em] opacity-70">{label}</span>
       </div>
-    </section>
+      {description ? <p className="max-w-[44rem] text-sm leading-relaxed text-secondary-token">{description}</p> : null}
+    </div>
   );
 }
 
@@ -175,54 +121,65 @@ function WeatherSettings() {
   }
 
   return (
-    <section className="panel p-8">
+    <section className="panel p-6 xl:p-7">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_100%_0%,rgba(59,130,246,0.07),transparent)]" />
-      <div className="relative grid gap-6">
-        <SectionHeader icon={<CloudIcon />} label="Wetter" accent="text-blue-300" />
+      <div className="relative grid gap-5">
+        <SectionHeader
+          icon={<CloudIcon />}
+          label="Wetter"
+          accent="text-blue-300"
+          description="Ort, Koordinaten und Aktualisierungsintervall fuer das Wetter-Widget festlegen."
+        />
 
-        <label className="grid gap-2">
-          <FieldLabel>Ort / Stadt</FieldLabel>
-          <input
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="touch-input"
-            placeholder="z.B. Zuerich"
-          />
-        </label>
+        <div className="surface-subtle rounded-2xl p-5">
+          <div className="grid gap-4">
+            <label className="grid gap-2">
+              <FieldLabel>Ort / Stadt</FieldLabel>
+              <input
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className="settings-input"
+                placeholder="z.B. Zuerich"
+              />
+            </label>
 
-        <div className="grid grid-cols-2 gap-4">
-          <label className="grid gap-2">
-            <FieldLabel>Breitengrad</FieldLabel>
-            <input type="number" step="0.0001" value={lat} onChange={(e) => setLat(e.target.value)} className="touch-input" placeholder="47.3769" />
-          </label>
-          <label className="grid gap-2">
-            <FieldLabel>Längengrad</FieldLabel>
-            <input type="number" step="0.0001" value={lon} onChange={(e) => setLon(e.target.value)} className="touch-input" placeholder="8.5417" />
-          </label>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <label className="grid gap-2">
+                <FieldLabel>Breitengrad</FieldLabel>
+                <input type="number" step="0.0001" value={lat} onChange={(e) => setLat(e.target.value)} className="settings-input" placeholder="47.3769" />
+              </label>
+              <label className="grid gap-2">
+                <FieldLabel>Laengengrad</FieldLabel>
+                <input type="number" step="0.0001" value={lon} onChange={(e) => setLon(e.target.value)} className="settings-input" placeholder="8.5417" />
+              </label>
+            </div>
+          </div>
         </div>
 
-        <button type="button" onClick={useCurrentLocation} className="touch-btn-secondary gap-2">
-          <LocateIcon />
-          Aktuellen Standort verwenden
-        </button>
+        <div className="grid gap-4">
+          <label className="grid gap-2">
+            <FieldLabel>Aktualisierungsintervall</FieldLabel>
+            <select value={refresh} onChange={(e) => setRefresh(e.target.value)} className="settings-input">
+              <option value="5">Alle 5 Minuten</option>
+              <option value="10">Alle 10 Minuten</option>
+              <option value="15">Alle 15 Minuten</option>
+              <option value="30">Alle 30 Minuten</option>
+              <option value="60">Jede Stunde</option>
+            </select>
+          </label>
 
-        <label className="grid gap-2">
-          <FieldLabel>Aktualisierungsintervall</FieldLabel>
-          <select value={refresh} onChange={(e) => setRefresh(e.target.value)} className="touch-input">
-            <option value="5">Alle 5 Minuten</option>
-            <option value="10">Alle 10 Minuten</option>
-            <option value="15">Alle 15 Minuten</option>
-            <option value="30">Alle 30 Minuten</option>
-            <option value="60">Jede Stunde</option>
-          </select>
-        </label>
+          <button type="button" onClick={useCurrentLocation} className="settings-btn-secondary gap-2 sm:w-auto sm:min-w-[16rem]">
+            <LocateIcon />
+            Aktuellen Standort verwenden
+          </button>
+        </div>
 
         <button
           type="button"
           onClick={save}
           className={[
-            'touch-btn-primary transition-all',
+            'settings-btn-primary transition-all sm:w-auto sm:min-w-[12rem]',
             saved ? 'bg-emerald-500/85 hover:bg-emerald-500' : '',
           ].join(' ')}
         >
@@ -242,11 +199,27 @@ function OutlookSettings() {
   const { account, setAccount } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isMsalConfigured, setIsMsalConfigured] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void import('../lib/msal').then((module) => {
+      if (!cancelled) {
+        setIsMsalConfigured(module.isMsalConfigured);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function connect() {
     setLoading(true);
     setError('');
     try {
+      const { msalSignIn } = await import('../lib/msal');
       const acc = await msalSignIn();
       setAccount(acc);
       if (!acc) setError('Anmeldung wurde abgebrochen oder ist fehlgeschlagen.');
@@ -258,6 +231,7 @@ function OutlookSettings() {
   async function disconnect() {
     setLoading(true);
     try {
+      const { msalSignOut } = await import('../lib/msal');
       await msalSignOut();
       setAccount(null);
     } finally {
@@ -265,12 +239,34 @@ function OutlookSettings() {
     }
   }
 
-  if (!isMsalConfigured) {
+  if (isMsalConfigured === null) {
     return (
-      <section className="panel p-8">
+      <section className="panel p-6 xl:p-7">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_0%_0%,rgba(59,130,246,0.07),transparent)]" />
         <div className="relative">
-          <SectionHeader icon={<CalendarIcon />} label="Outlook Kalender" accent="text-blue-300" />
+          <SectionHeader
+            icon={<CalendarIcon />}
+            label="Outlook Kalender"
+            accent="text-blue-300"
+            description="Microsoft-Konto fuer Kalendertermine verbinden oder trennen."
+          />
+          <div className="surface-subtle rounded-2xl p-6 text-sm text-secondary-token">Outlook-Verbindung wird vorbereitet…</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!isMsalConfigured) {
+    return (
+      <section className="panel p-6 xl:p-7">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_0%_0%,rgba(59,130,246,0.07),transparent)]" />
+        <div className="relative">
+          <SectionHeader
+            icon={<CalendarIcon />}
+            label="Outlook Kalender"
+            accent="text-blue-300"
+            description="Microsoft-Konto fuer Kalendertermine verbinden oder trennen."
+          />
           <div className="rounded-2xl border border-amber-400/15 bg-amber-400/[0.06] p-6">
             <p className="text-base font-semibold text-amber-300/90">Azure App-ID fehlt</p>
             <p className="mt-2 text-sm leading-relaxed text-white/45">
@@ -293,41 +289,49 @@ function OutlookSettings() {
   }
 
   return (
-    <section className="panel p-8">
+    <section className="panel p-6 xl:p-7">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_0%_0%,rgba(59,130,246,0.07),transparent)]" />
-      <div className="relative grid gap-6">
-        <SectionHeader icon={<CalendarIcon />} label="Outlook Kalender" accent="text-blue-300" />
+      <div className="relative grid gap-5">
+        <SectionHeader
+          icon={<CalendarIcon />}
+          label="Outlook Kalender"
+          accent="text-blue-300"
+          description="Microsoft-Konto fuer Kalendertermine verbinden oder trennen."
+        />
 
         {account ? (
           <>
-            <div className="flex items-center gap-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-5">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
-                <CheckIcon />
+            <div className="surface-subtle rounded-2xl p-5">
+              <div className="flex items-center gap-4 rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] p-5">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
+                  <CheckIcon />
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-base font-semibold text-white">{account.name ?? account.username}</p>
+                  <p className="truncate text-sm text-white/40">{account.username}</p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="truncate text-base font-semibold text-white">{account.name ?? account.username}</p>
-                <p className="truncate text-sm text-white/40">{account.username}</p>
-              </div>
+              <p className="mt-4 text-sm leading-relaxed text-secondary-token">
+                Termine der naechsten 14 Tage werden automatisch auf dem Dashboard angezeigt.
+              </p>
             </div>
-            <p className="text-sm leading-relaxed text-white/35">
-              Termine der nächsten 14 Tage werden automatisch auf dem Dashboard angezeigt.
-            </p>
-            <button type="button" onClick={disconnect} disabled={loading} className="touch-btn-danger">
+
+            <button type="button" onClick={disconnect} disabled={loading} className="settings-btn-danger sm:w-auto sm:min-w-[12rem]">
               {loading ? 'Wird getrennt…' : 'Konto trennen'}
             </button>
           </>
         ) : (
           <>
-            <div className="rounded-2xl border border-slate-400/10 bg-white/[0.03] p-5 text-sm leading-relaxed text-slate-300/60">
+            <div className="surface-subtle rounded-2xl p-5 text-sm leading-relaxed text-secondary-token">
               Verbinde dein Microsoft-Konto um Outlook-Kalendertermine direkt auf dem Dashboard anzuzeigen.
-              <span className="mt-2 block text-slate-400/60">Benötigte Berechtigung: Calendars.Read</span>
+              <span className="mt-2 block text-muted-token">Benoetigte Berechtigung: Calendars.Read</span>
             </div>
             {error && (
               <p className="rounded-xl border border-rose-400/15 bg-rose-400/[0.06] px-4 py-3 text-sm text-rose-300/80">
                 {error}
               </p>
             )}
-            <button type="button" onClick={connect} disabled={loading} className="touch-btn-primary gap-3">
+            <button type="button" onClick={connect} disabled={loading} className="settings-btn-primary gap-3 sm:w-auto sm:min-w-[15rem]">
               <MicrosoftIcon />
               {loading ? 'Anmeldung läuft…' : 'Mit Microsoft anmelden'}
             </button>
@@ -362,16 +366,22 @@ function DataSettings() {
   }
 
   return (
-    <section className="panel p-8">
+    <section className="panel p-6 xl:p-7">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.07),transparent)]" />
       <div className="relative">
-        <SectionHeader icon={<DatabaseIcon />} label="Lokale Daten" accent="text-blue-300" />
+        <SectionHeader
+          icon={<DatabaseIcon />}
+          label="Lokale Daten"
+          accent="text-blue-300"
+          description="Lokale Listen gezielt aufraeumen, ohne andere gespeicherte Daten zu verlieren."
+        />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <button
             type="button"
             onClick={clearDoneTodos}
             className={[
               'touch-btn-secondary flex items-center justify-center gap-3 transition-colors',
+              'settings-btn-secondary',
               cleared === 'todos' && 'border-emerald-400/25 bg-emerald-400/[0.08] text-emerald-300',
             ]
               .filter(Boolean)
@@ -392,6 +402,7 @@ function DataSettings() {
             onClick={clearShopping}
             className={[
               'touch-btn-secondary flex items-center justify-center gap-3 transition-colors',
+              'settings-btn-secondary',
               cleared === 'shopping' && 'border-emerald-400/25 bg-emerald-400/[0.08] text-emerald-300',
             ]
               .filter(Boolean)
@@ -419,11 +430,10 @@ function DataSettings() {
 /* ─── Main Settings page ─────────────────────────────────────────────────── */
 export function SettingsPage() {
   return (
-    <main className="app-shell min-h-screen px-8 py-8 xl:px-12">
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-6">
+    <main className="app-shell min-h-screen px-6 py-6 xl:px-10 xl:py-8">
+      <div className="mx-auto flex max-w-[1320px] flex-col gap-5">
         <NavBar />
-        <div className="grid grid-cols-1 gap-6 pb-12 xl:grid-cols-2">
-          <AppearanceSettings />
+        <div className="grid grid-cols-1 gap-5 pb-10 xl:grid-cols-2">
           <WeatherSettings />
           <OutlookSettings />
           <div className="xl:col-span-2">

@@ -65,7 +65,7 @@ export function ShoppingCard() {
             <button
               type="button"
               onClick={clearChecked}
-              className="text-secondary-token surface-subtle rounded-full px-3 py-1 text-sm font-semibold transition hover:bg-rose-400/12 hover:text-rose-200"
+              className="text-secondary-token surface-subtle flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold transition hover:bg-rose-400/12 hover:text-rose-200"
             >
               ✕ {checked.length} löschen
             </button>
@@ -129,7 +129,7 @@ function Row({
         type="button"
         onClick={() => onToggle(item.id)}
         className={[
-          'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm transition',
+          'touch-target-comfortable flex shrink-0 items-center justify-center rounded-full border text-base transition',
           item.checked
             ? 'border-emerald-400/45 bg-emerald-400/12 text-emerald-200'
             : 'border-slate-400/20 text-slate-400/40 hover:border-slate-400/50',
@@ -149,7 +149,7 @@ function Row({
       <button
         type="button"
         onClick={() => onRemove(item.id)}
-        className="text-muted-token transition hover:text-rose-300"
+        className="touch-target text-muted-token flex items-center justify-center rounded-xl transition hover:bg-rose-400/[0.08] hover:text-rose-300"
         aria-label="Entfernen"
       >
         ✕

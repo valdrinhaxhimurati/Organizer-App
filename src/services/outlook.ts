@@ -1,6 +1,4 @@
-import { Client } from '@microsoft/microsoft-graph-client';
 import type { CalendarEvent } from '../lib/types';
-import { getAccessToken } from '../lib/msal';
 
 type GraphEvent = {
   id: string;
@@ -11,15 +9,6 @@ type GraphEvent = {
   isAllDay?: boolean;
 };
 
-function createClient(): Client {
-  return Client.init({
-    authProvider: async (done) => {
-      const token = await getAccessToken();
-      token ? done(null, token) : done(new Error('Kein Zugriffstoken'), null);
-    },
-  });
-}
-
 /** Parse Graph datetime (local time, no offset) to ISO UTC string.
  *  We request UTC via Prefer header, so the string is already UTC without 'Z'. */
 function toIso(dt: string): string {
@@ -29,7 +18,17 @@ function toIso(dt: string): string {
 }
 
 export async function fetchOutlookEvents(days = 14): Promise<CalendarEvent[]> {
-  const client = createClient();
+  const [{ Client }, { getAccessToken }] = await Promise.all([
+    import('@microsoft/microsoft-graph-client'),
+    import('../lib/msal'),
+  ]);
+
+  const client = Client.init({
+    authProvider: async (done) => {
+      const token = await getAccessToken();
+      token ? done(null, token) : done(new Error('Kein Zugriffstoken'), null);
+    },
+  });
 
   const start = new Date();
   start.setHours(0, 0, 0, 0);
