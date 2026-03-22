@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { NavBar } from '../components/NavBar';
+import { CalendarCard } from '../components/CalendarCard';
 import { ClockCard } from '../components/ClockCard';
 import { ShoppingCard } from '../components/ShoppingCard';
 import { TodayCard } from '../components/TodayCard';
@@ -46,7 +47,10 @@ export function AppShell() {
           <WeatherCard />
         </div>
 
-        {/* Bottom rows: Calendar (left) | Todos + Shopping (right) */}
+        {/* Calendar – full width */}
+        <CalendarCard events={calendarQuery.data ?? []} />
+
+        {/* Bottom rows: Today + Week (left) | Todos + Shopping (right) */}
         <div className="grid flex-1 grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
           <div className="grid gap-6">
             <TodayCard todayEvents={todayEvents} />
