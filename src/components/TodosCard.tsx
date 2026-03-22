@@ -45,7 +45,7 @@ function SortableRow({
         type="button"
         {...attributes}
         {...listeners}
-        className="cursor-grab touch-none text-zinc-600 hover:text-zinc-400 active:cursor-grabbing"
+        className="text-muted-token cursor-grab touch-none hover:text-slate-400 active:cursor-grabbing"
         aria-label="Ziehen zum Sortieren"
       >
         ⠿
@@ -59,7 +59,7 @@ function SortableRow({
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm transition',
           todo.done
             ? 'border-emerald-400/45 bg-emerald-400/12 text-emerald-200'
-            : 'border-white/20 text-white/20 hover:border-white/50',
+            : 'border-slate-400/20 text-slate-400/40 hover:border-slate-400/50',
         ].join(' ')}
       >
         {todo.done ? '✓' : ''}
@@ -140,45 +140,45 @@ export function TodosCard() {
     <section className="panel p-8">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.08),transparent)]" />
       <div className="relative">
-      <div className="flex items-center justify-between gap-3">
-        <p className="panel-title text-blue-300/55">To-dos</p>
-        <span className="chip-accent rounded-full px-3 py-1 text-sm font-bold">
-          {todos.filter((t) => !t.done).length} offen
-        </span>
-      </div>
+        <div className="flex items-center justify-between gap-3">
+          <p className="panel-title text-blue-300/55">To-dos</p>
+          <span className="chip-accent rounded-full px-3 py-1 text-sm font-bold">
+            {todos.filter((t) => !t.done).length} offen
+          </span>
+        </div>
 
-      {/* Add-new form */}
-      <form onSubmit={handleAdd} className="mt-5 flex gap-3">
-        <input
-          ref={inputRef}
-          value={newTitle}
-          onChange={(e) => setNewTitle(e.target.value)}
-          placeholder="Neue Aufgabe…"
-          className="h-14 flex-1 min-w-0 rounded-xl border border-slate-400/12 bg-white/[0.04] px-5 text-xl text-primary-token placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/35"
-        />
-        <button
-          type="submit"
-          disabled={!newTitle.trim()}
-          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-blue-500/85 text-3xl font-bold text-white transition hover:bg-blue-500 disabled:opacity-30"
-        >
-          +
-        </button>
-      </form>
+        {/* Add-new form */}
+        <form onSubmit={handleAdd} className="mt-5 flex gap-3">
+          <input
+            ref={inputRef}
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            placeholder="Neue Aufgabe…"
+            className="h-14 flex-1 min-w-0 rounded-xl border border-slate-400/12 bg-white/[0.04] px-5 text-xl text-primary-token placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400/35"
+          />
+          <button
+            type="submit"
+            disabled={!newTitle.trim()}
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-blue-500/85 text-3xl font-bold text-white transition hover:bg-blue-500 disabled:opacity-30"
+          >
+            +
+          </button>
+        </form>
 
-      {/* Sortable list */}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={todos.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-          <div className="mt-5 space-y-2">
-            {todos.map((todo) => (
-              <SortableRow
-                key={todo.id}
-                todo={todo}
-                onToggle={(id, done) => toggleMutation.mutate({ id, done })}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+        {/* Sortable list */}
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={todos.map((t) => t.id)} strategy={verticalListSortingStrategy}>
+            <div className="mt-5 space-y-2">
+              {todos.map((todo) => (
+                <SortableRow
+                  key={todo.id}
+                  todo={todo}
+                  onToggle={(id, done) => toggleMutation.mutate({ id, done })}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       </div>
     </section>
   );

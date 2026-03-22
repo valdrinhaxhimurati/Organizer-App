@@ -6,9 +6,14 @@ import { registerSW } from 'virtual:pwa-register';
 import { msalInstance, getMsalAccount } from './lib/msal';
 import { useAuthStore } from './store/authStore';
 import { useSettingsStore } from './store/settingsStore';
-import { AppShell } from './pages/AppShell';
-import { SettingsPage } from './pages/SettingsPage';
 import './styles.css';
+
+const AppShellPage = React.lazy(() =>
+  import('./pages/AppShell').then((module) => ({ default: module.AppShell }))
+);
+const SettingsPageView = React.lazy(() =>
+  import('./pages/SettingsPage').then((module) => ({ default: module.SettingsPage }))
+);
 
 // Initialize MSAL before rendering so all components have an initialized instance
 await msalInstance.initialize();
@@ -34,8 +39,22 @@ const queryClient = new QueryClient({
 });
 
 const router = createBrowserRouter([
-  { path: '/', element: <AppShell /> },
-  { path: '/settings', element: <SettingsPage /> },
+  {
+    path: '/',
+    element: (
+      <React.Suspense fallback={null}>
+        <AppShellPage />
+      </React.Suspense>
+    )
+  },
+  {
+    path: '/settings',
+    element: (
+      <React.Suspense fallback={null}>
+        <SettingsPageView />
+      </React.Suspense>
+    )
+  },
 ]);
 
 registerSW({ immediate: true });

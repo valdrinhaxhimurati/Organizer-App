@@ -51,6 +51,37 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) {
+            return;
+          }
+
+          if (id.includes('@azure/msal-browser') || id.includes('@microsoft/microsoft-graph-client')) {
+            return 'vendor-auth';
+          }
+
+          if (id.includes('@dnd-kit')) {
+            return 'vendor-dnd';
+          }
+
+          if (id.includes('@tanstack/react-query')) {
+            return 'vendor-query';
+          }
+
+          if (id.includes('@supabase/supabase-js')) {
+            return 'vendor-supabase';
+          }
+
+          if (id.includes('react') || id.includes('scheduler')) {
+            return 'vendor-react';
+          }
+        }
+      }
+    }
+  },
   server: {
     host: '0.0.0.0',
     port: 5173

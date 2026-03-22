@@ -136,7 +136,7 @@ export function CalendarCard({ events }: Props) {
             <button
               type="button"
               onClick={() => setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() - 1, 1))}
-              className="flex h-12 w-12 items-center justify-center rounded-xl text-white/40 transition hover:bg-white/[0.07] hover:text-white active:scale-95"
+              className="text-muted-token flex h-12 w-12 items-center justify-center rounded-xl transition hover:bg-white/[0.07] hover:text-current active:scale-95"
               aria-label="Vorheriger Monat"
             >
               <ChevronLeft />
@@ -147,7 +147,7 @@ export function CalendarCard({ events }: Props) {
             <button
               type="button"
               onClick={() => setViewMonth((m) => new Date(m.getFullYear(), m.getMonth() + 1, 1))}
-              className="flex h-12 w-12 items-center justify-center rounded-xl text-white/40 transition hover:bg-white/[0.07] hover:text-white active:scale-95"
+              className="text-muted-token flex h-12 w-12 items-center justify-center rounded-xl transition hover:bg-white/[0.07] hover:text-current active:scale-95"
               aria-label="Nächster Monat"
             >
               <ChevronRight />
@@ -160,7 +160,7 @@ export function CalendarCard({ events }: Props) {
                   setSelectedDate(todayStr);
                   setShowForm(false);
                 }}
-                className="h-12 rounded-xl border border-white/[0.08] px-4 text-sm text-white/40 transition hover:bg-white/[0.06] hover:text-white/70 active:scale-95"
+                className="text-muted-token h-12 rounded-xl border border-slate-400/12 px-4 text-sm transition hover:bg-white/[0.06] hover:text-slate-200 active:scale-95"
               >
                 Heute
               </button>
@@ -172,7 +172,7 @@ export function CalendarCard({ events }: Props) {
               className={[
                 'ml-1 flex h-12 w-12 items-center justify-center rounded-xl transition active:scale-95',
                 showForm
-                  ? 'bg-white/[0.08] text-white/60 hover:bg-white/[0.12]'
+                  ? 'surface-subtle text-muted-token hover:bg-white/[0.12]'
                   : 'bg-blue-500/85 text-white hover:bg-blue-500',
               ].join(' ')}
               aria-label={showForm ? 'Abbrechen' : 'Neuer Termin'}
