@@ -57,15 +57,17 @@ export function ShoppingCard() {
 
   return (
     <section className="panel p-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_0%_100%,rgba(244,63,94,0.09),transparent)]" />
+      <div className="relative">
       <div className="flex items-center justify-between gap-3">
-        <p className="panel-title">Einkaufsliste</p>
+        <p className="panel-title text-rose-400/60">Einkaufsliste</p>
         {checked.length > 0 && (
           <button
             type="button"
             onClick={clearChecked}
-            className="rounded-full bg-white/5 px-4 py-2 text-lg text-zinc-400 transition hover:bg-white/10 hover:text-rose-300"
+            className="rounded-full bg-white/[0.06] px-3 py-1 text-sm font-semibold text-white/40 transition hover:bg-rose-400/15 hover:text-rose-300/80"
           >
-            ✕ {checked.length} löschen
+            ✕ {checked.length} löschen
           </button>
         )}
       </div>
@@ -77,19 +79,19 @@ export function ShoppingCard() {
           value={newLabel}
           onChange={(e) => setNewLabel(e.target.value)}
           placeholder="Artikel hinzufügen…"
-          className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-emerald-400/50"
+          className="h-14 flex-1 min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.05] px-5 text-xl text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-rose-400/35"
         />
         <button
           type="submit"
           disabled={!newLabel.trim()}
-          className="rounded-2xl bg-emerald-600/70 px-5 py-3 text-2xl font-bold text-white transition hover:bg-emerald-500/80 disabled:opacity-30"
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-rose-500/70 text-3xl font-bold text-white transition hover:bg-rose-500/90 disabled:opacity-30"
         >
           +
         </button>
       </form>
 
       {items.length === 0 && (
-        <p className="mt-8 text-center text-xl text-zinc-600">Keine Artikel — füge etwas hinzu!</p>
+        <p className="mt-8 text-center text-xl text-white/25">Keine Artikel — füge etwas hinzu!</p>
       )}
 
       {/* Unchecked items */}
@@ -107,6 +109,7 @@ export function ShoppingCard() {
           ))}
         </div>
       )}
+      </div>
     </section>
   );
 }
@@ -121,15 +124,15 @@ function Row({
   onRemove: (id: string) => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/5 px-4 py-3">
+    <div className="flex items-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.04] px-4 py-3.5">
       <button
         type="button"
         onClick={() => onToggle(item.id)}
         className={[
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm transition',
           item.checked
-            ? 'border-emerald-300/40 bg-emerald-300/15 text-emerald-200'
-            : 'border-zinc-500 text-zinc-500 hover:border-zinc-300',
+            ? 'border-rose-400/50 bg-rose-400/15 text-rose-200'
+            : 'border-white/20 text-white/20 hover:border-white/50',
         ].join(' ')}
       >
         {item.checked ? '✓' : ''}

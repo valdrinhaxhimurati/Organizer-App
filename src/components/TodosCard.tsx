@@ -38,7 +38,7 @@ function SortableRow({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex w-full items-center gap-4 rounded-3xl border border-white/8 bg-white/5 px-5 py-4"
+      className="flex w-full items-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.04] px-4 py-3.5"
     >
       {/* drag handle */}
       <button
@@ -58,8 +58,8 @@ function SortableRow({
         className={[
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-sm transition',
           todo.done
-            ? 'border-emerald-300/40 bg-emerald-300/15 text-emerald-200'
-            : 'border-zinc-500 text-zinc-500 hover:border-zinc-300',
+            ? 'border-violet-400/50 bg-violet-400/15 text-violet-200'
+            : 'border-white/20 text-white/20 hover:border-white/50',
         ].join(' ')}
       >
         {todo.done ? '✓' : ''}
@@ -69,7 +69,7 @@ function SortableRow({
       <span className="flex-1 text-left">
         <span
           className={
-            todo.done ? 'text-xl text-zinc-500 line-through' : 'text-2xl text-white'
+            todo.done ? 'text-xl text-white/30 line-through' : 'text-xl font-semibold text-white'
           }
         >
           {todo.title}
@@ -138,9 +138,11 @@ export function TodosCard() {
 
   return (
     <section className="panel p-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(139,92,246,0.10),transparent)]" />
+      <div className="relative">
       <div className="flex items-center justify-between gap-3">
-        <p className="panel-title">To-dos</p>
-        <span className="rounded-full bg-fuchsia-400/10 px-4 py-2 text-lg text-fuchsia-200">
+        <p className="panel-title text-violet-400/60">To-dos</p>
+        <span className="rounded-full bg-violet-400/10 px-3 py-1 text-sm font-bold text-violet-300/80">
           {todos.filter((t) => !t.done).length} offen
         </span>
       </div>
@@ -152,12 +154,12 @@ export function TodosCard() {
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="Neue Aufgabe…"
-          className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-xl text-white placeholder:text-zinc-600 focus:outline-none focus:ring-1 focus:ring-fuchsia-400/50"
+          className="h-14 flex-1 min-w-0 rounded-xl border border-white/[0.08] bg-white/[0.05] px-5 text-xl text-white placeholder:text-white/25 focus:outline-none focus:ring-2 focus:ring-violet-400/35"
         />
         <button
           type="submit"
           disabled={!newTitle.trim()}
-          className="rounded-2xl bg-fuchsia-500/80 px-5 py-3 text-2xl font-bold text-white transition hover:bg-fuchsia-500 disabled:opacity-30"
+          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-violet-500/80 text-3xl font-bold text-white transition hover:bg-violet-500/90 disabled:opacity-30"
         >
           +
         </button>
@@ -166,7 +168,7 @@ export function TodosCard() {
       {/* Sortable list */}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={todos.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-          <div className="mt-5 space-y-3">
+          <div className="mt-5 space-y-2">
             {todos.map((todo) => (
               <SortableRow
                 key={todo.id}
@@ -177,6 +179,7 @@ export function TodosCard() {
           </div>
         </SortableContext>
       </DndContext>
+      </div>
     </section>
   );
 }

@@ -3,42 +3,63 @@ import { weatherLabel } from '../lib/utils';
 import { getWeather } from '../services/weather';
 import { useSettingsStore } from '../store/settingsStore';
 
+function weatherEmoji(code: number): string {
+  if (code === 0) return '\u2600\uFE0F';
+  if (code === 1) return '\uD83C\uDF24';
+  if (code === 2) return '\u26C5';
+  if (code === 3) return '\u2601\uFE0F';
+  if ([45, 48].includes(code)) return '\uD83C\uDF2B';
+  if ([51, 53, 55].includes(code)) return '\uD83C\uDF26';
+  if ([61, 63, 65, 80, 81, 82].includes(code)) return '\uD83C\uDF27';
+  if ([71, 73, 75, 77, 85, 86].includes(code)) return '\u2744\uFE0F';
+  if ([95, 96, 99].includes(code)) return '\u26C8';
+  return '\uD83C\uDF21';
+}
+
 export function WeatherCard() {
   const settings = useSettingsStore((state) => state.settings);
   const query = useQuery({
     queryKey: ['weather', settings.latitude, settings.longitude],
     queryFn: () => getWeather(settings.latitude, settings.longitude),
-    refetchInterval: settings.weatherRefreshMinutes * 60 * 1000
+    refetchInterval: settings.weatherRefreshMinutes * 60 * 1000,
   });
+
+  const data = query.data;
 
   return (
     <section className="panel p-8">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="panel-title">Wetter</p>
-          <h2 className="mt-4 text-5xl font-semibold text-white">
-            {query.data ? `${Math.round(query.data.temperature)}°` : '--°'}
-          </h2>
-          <p className="mt-3 text-xl text-zinc-300">
-            {query.data ? weatherLabel(query.data.weatherCode) : 'Lade Wetterdaten'}
-          </p>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_100%_10%,rgba(16,185,129,0.11),transparent)]" />
+      <div className="relative">
+        <p className="panel-title text-emerald-400/60">Wetter · {settings.city}</p>
+        <div className="mt-3 flex items-end gap-4">
+          <span
+            className="tabular-nums leading-none font-black text-white"
+            style={{ fontSize: 'clamp(3.5rem, 6vw, 5.5rem)' }}
+          >
+            {data ? `${Math.round(data.temperature)}°` : '--°'}
+          </span>
+          {data && (
+            <span className="mb-1.5 text-5xl leading-none">{weatherEmoji(data.weatherCode)}</span>
+          )}
         </div>
-        <div className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-4 py-2 text-lg text-emerald-200">
-          {settings.city}
-        </div>
-      </div>
-      <div className="mt-8 grid grid-cols-2 gap-4 text-lg text-zinc-300">
-        <div className="rounded-2xl bg-white/6 p-4">
-          <p className="text-sm uppercase tracking-[0.3em] text-zinc-500">Wind</p>
-          <p className="mt-2 text-2xl text-white">{query.data ? `${Math.round(query.data.windSpeed)} km/h` : '--'}</p>
-        </div>
-        <div className="rounded-2xl bg-white/6 p-4">
-          <p className="text-sm uppercase tracking-[0.3em] text-zinc-500">Zuletzt</p>
-          <p className="mt-2 text-2xl text-white">
-            {query.data
-              ? new Date(query.data.fetchedAt).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })
-              : '--'}
-          </p>
+        <p className="mt-2.5 text-xl font-medium text-white/45">
+          {data ? weatherLabel(data.weatherCode) : 'Lade Wetterdaten…'}
+        </p>
+        <div className="mt-7 grid grid-cols-2 gap-3">
+          <div className="rounded-2xl bg-white/[0.05] p-4">
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.38em] text-white/30">Wind</p>
+            <p className="mt-2 text-2xl font-bold tabular-nums text-white">
+              {data ? `${Math.round(data.windSpeed)} km/h` : '--'}
+            </p>
+          </div>
+          <div className="rounded-2xl bg-white/[0.05] p-4">
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.38em] text-white/30">Aktualisiert</p>
+            <p className="mt-2 text-2xl font-bold tabular-nums text-white">
+              {data
+                ? new Date(data.fetchedAt).toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' })
+                : '--'}
+            </p>
+          </div>
         </div>
       </div>
     </section>

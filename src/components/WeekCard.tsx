@@ -1,32 +1,56 @@
 import type { CalendarEvent } from '../lib/types';
-import { formatShortDate, formatTime } from '../lib/utils';
+import { formatTime } from '../lib/utils';
 
 type Props = {
   weekEvents: CalendarEvent[];
 };
 
+function dayAbbr(dateStr: string) {
+  return new Intl.DateTimeFormat('de-CH', { weekday: 'short' }).format(new Date(dateStr));
+}
+
+function dayNum(dateStr: string) {
+  return new Date(dateStr).getDate();
+}
+
 export function WeekCard({ weekEvents }: Props) {
   return (
     <section className="panel p-8">
-      <div className="flex items-center justify-between gap-3">
-        <p className="panel-title">Diese Woche</p>
-        <span className="text-lg text-zinc-400">Google Calendar ready</span>
-      </div>
-      <div className="mt-6 space-y-3">
-        {weekEvents.map((event) => (
-          <article key={event.id} className="flex items-center gap-4 rounded-3xl border border-white/8 bg-black/15 px-4 py-4">
-            <div className="flex h-16 w-16 flex-col items-center justify-center rounded-2xl bg-white/8 text-center">
-              <span className="text-xs uppercase tracking-[0.28em] text-zinc-400">Tag</span>
-              <span className="mt-1 text-xl font-semibold text-white">{formatShortDate(event.startsAt)}</span>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_100%_0%,rgba(99,102,241,0.09),transparent)]" />
+      <div className="relative">
+        <div className="flex items-center justify-between gap-3">
+          <p className="panel-title text-indigo-400/60">Diese Woche</p>
+          <span className="rounded-full bg-indigo-400/10 px-3 py-1 text-sm font-bold text-indigo-300/70">
+            {weekEvents.length} {weekEvents.length === 1 ? 'Termin' : 'Termine'}
+          </span>
+        </div>
+        <div className="mt-6 space-y-2.5">
+          {weekEvents.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-white/[0.07] px-6 py-10 text-center">
+              <p className="text-xl text-white/30">Diese Woche keine Termine</p>
             </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="truncate text-2xl font-medium text-white">{event.title}</h3>
-              <p className="mt-1 truncate text-lg text-zinc-400">
-                {formatTime(new Date(event.startsAt))} · {event.location ?? 'Familie'}
-              </p>
-            </div>
-          </article>
-        ))}
+          ) : (
+            weekEvents.map((event) => (
+              <article key={event.id} className="flex items-center gap-4 rounded-2xl bg-white/[0.04] px-4 py-4">
+                <div className="flex h-14 w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-indigo-500/15">
+                  <span className="text-[0.6rem] font-bold uppercase tracking-widest text-indigo-300/70">
+                    {dayAbbr(event.startsAt)}
+                  </span>
+                  <span className="tabular-nums text-xl font-bold leading-tight text-white">
+                    {dayNum(event.startsAt)}
+                  </span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate text-xl font-semibold text-white">{event.title}</h3>
+                  <p className="mt-0.5 text-base text-white/40">
+                    {formatTime(new Date(event.startsAt))}
+                    {event.location ? ` · ${event.location}` : ''}
+                  </p>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
       </div>
     </section>
   );
